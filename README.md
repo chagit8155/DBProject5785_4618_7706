@@ -105,19 +105,27 @@
 
 ### דוגמה להמחשת העבודה באתר עבור הטבלה ClassType: 
 - הגדרת סוגי תכונות הישות ושמותיהם באתר
+
 ![image](Stage1/genData/1.jpeg)
 
 - עריכת ההגדרות להוצאת קובץ בפורמט CSV
+
+
 ![image](Stage1/genData/2.jpeg)
+
 ![image](Stage1/genData/3.jpeg)
 
+
 - יצירת 400 רשומות לטבלה ולחיצה על Generate
+  
 ![image](Stage1/genData/4.jpeg)
+
+
 - העלאת הקובץ הנוצר למאגר וקבלת האישור להלן
 
 ![image](Stage1/genData/5.jpeg)
 
- - תוצאת השאילתא `;SELECT 'ClassType' AS table_name, COUNT(*) FROM ClassType`:
+ - תוצאת השאילתה `;SELECT 'ClassType' AS table_name, COUNT(*) FROM ClassType`:
 
 ![image](Stage1/genData/6.jpeg)
 
@@ -133,8 +141,9 @@
 - שני מפתחות זרים ע"פ טווחיהם  
 📜 [צפייה ב-`Registers_For.csv`](Stage1/pythonData/Registers_For.csv)
 
-# סקריפט היצירה: [צפייה ב-`genCSV.py`](Stage1/pythonData/genCSV.py)
+##### סקריפט היצירה: [צפייה ב-`genCSV.py`](Stage1/pythonData/genCSV.py)
 - 3 קבצי הCSV שהסקריפט יצר הועלאו בהצלחה למאגר
+
 ![image](Stage1/pythonData/1.jpeg)
 
 ![image](Stage1/pythonData/2.jpeg)
@@ -145,6 +154,7 @@
 ### גיבוי  
 - קבצי הגיבוי נשמרים עם התאריך והשעה של מועד הגיבוי:
 
+## שלב 2: אינטגרציה 
 
 
 
