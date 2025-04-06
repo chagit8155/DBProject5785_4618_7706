@@ -67,7 +67,57 @@
 
 📜 **[צפייה ב-selectAll_tables.sql](Stage1/scripts/selectAll.sql)**
 
-###נתונים
+### נתונים  
+#### כלי ראשון: שימוש ב-[Mockaroo](https://www.mockaroo.com/) ליצירת קובץ CSV  
+##### הזנת נתונים לטבלת person  
+- טווח מזהי person: 1-800  
+📜 [צפייה ב-`Person.csv`](Stage1/mockData/Person.csv)  
+
+##### הזנת נתונים לטבלת Member  
+- טווח מזהי person: 1-400  
+📜 [צפייה ב-`Member.csv`](Stage1/mockData/Member.csv)  
+ 
+##### הזנת נתונים לטבלת Trainer
+- טווח מזהי person: 401-800  
+- נוסחת מזהה איש: `this + 400`  
+📜 [צפייה ב-`Trainer.csv`](Stage1/mockData/Trainer.csv)  
+
+
+### דוגמה להמחשת העבודה באתר עבור הטבלה Person: 
+- הגדרת סוגי תכונות הישות ושמותיהם באתר
+![image](Stage1/mockData/1.jpeg)
+- העלאת הקובץ שנוצר למאגר ע"י עמידה על הטבלה של Person, לחיצה ימנית ו- Import->Export Data
+![image](Stage1/mockData/2.jpeg)
+ - תוצאת השאילתא `;SELECT * FROM Person`:
+![image](Stage1/mockData/3.jpeg)
+   
+
+### כלי שני: שימוש ב-[generatedata](https://generatedata.com/generator) ליצירת קובץ CSV  
+##### הזנת נתונים לטבלת Room  
+- טווח מספרי קבוצה: 1-400  
+📜 [צפייה ב-`Room.csv`](Stage1/generateData/Room.csv)
+##### הזנת נתונים לטבלת Class  
+- טווח מספרי קבוצה: 1-400  
+📜 [צפייה ב-`Class.csv`](Stage1/generateData/Class.csv)
+##### הזנת נתונים לטבלת ClassType  
+- טווח מספרי קבוצה: 1-400  
+📜 [צפייה ב-`ClassType.csv`](Stage1/generateData/ClassType.csv)  
+
+### דוגמה להמחשת העבודה באתר עבור הטבלה ClassType: 
+- הגדרת סוגי תכונות הישות ושמותיהם באתר
+![image](Stage1/generateData/1.jpeg)
+- עריכת ההגדרות להוצאת קובץ בפורמט CSV
+![image](Stage1/generateData/2.jpeg)
+![image](Stage1/generateData/3.jpeg)
+- יצירת 400 רשומות לטבלה ולחיצה על Generate
+![image](Stage1/generateData/4.jpeg)
+- העלאת הקובץ הנוצר למאגר וקבלת האישור להלן
+
+![image](Stage1/generateData/5.jpeg)
+ - תוצאת השאילתא `;SELECT 'ClassType' AS table_name, COUNT(*) FROM ClassType`:
+![image](Stage1/generateData/6.jpeg)
+
+
 
 
 
