@@ -95,28 +95,55 @@
 ### כלי שני: שימוש ב-[generatedata](https://generatedata.com/generator) ליצירת קובץ CSV  
 ##### הזנת נתונים לטבלת Room  
 - טווח מספרי קבוצה: 1-400  
-📜 [צפייה ב-`Room.csv`](Stage1/generateData/Room.csv)
+📜 [צפייה ב-`Room.csv`](Stage1/genData/Room.csv)
 ##### הזנת נתונים לטבלת Class  
 - טווח מספרי קבוצה: 1-400  
-📜 [צפייה ב-`Class.csv`](Stage1/generateData/Class.csv)
+📜 [צפייה ב-`Class.csv`](Stage1/genData/Class.csv)
 ##### הזנת נתונים לטבלת ClassType  
 - טווח מספרי קבוצה: 1-400  
-📜 [צפייה ב-`ClassType.csv`](Stage1/generateData/ClassType.csv)  
+📜 [צפייה ב-`ClassType.csv`](Stage1/genData/ClassType.csv)  
 
 ### דוגמה להמחשת העבודה באתר עבור הטבלה ClassType: 
 - הגדרת סוגי תכונות הישות ושמותיהם באתר
-![image](Stage1/generateData/1.jpeg)
+![image](Stage1/genData/1.jpeg)
+
 - עריכת ההגדרות להוצאת קובץ בפורמט CSV
-![image](Stage1/generateData/2.jpeg)
-![image](Stage1/generateData/3.jpeg)
+![image](Stage1/genData/2.jpeg)
+![image](Stage1/genData/3.jpeg)
+
 - יצירת 400 רשומות לטבלה ולחיצה על Generate
-![image](Stage1/generateData/4.jpeg)
+![image](Stage1/genData/4.jpeg)
 - העלאת הקובץ הנוצר למאגר וקבלת האישור להלן
 
-![image](Stage1/generateData/5.jpeg)
- - תוצאת השאילתא `;SELECT 'ClassType' AS table_name, COUNT(*) FROM ClassType`:
-![image](Stage1/generateData/6.jpeg)
+![image](Stage1/genData/5.jpeg)
 
+ - תוצאת השאילתא `;SELECT 'ClassType' AS table_name, COUNT(*) FROM ClassType`:
+
+![image](Stage1/genData/6.jpeg)
+
+
+#### כלי שלישי: שימוש ב-Python ליצירת קבצי CSV
+##### יצירת נתונים לטבלת Equipment
+- טווח מספרי קבוצה: 1-400  
+📜 [צפייה ב-`Equipment.csv`](Stage1/pythonData/Equipment.csv)
+##### יצירת נתונים לטבלת Certified_For  
+- שני מפחתות זרים ע"פ טווחיהם
+📜 [צפייה ב-`Certified_For.csv`](Stage1/pythonData/Certified_For.csv)
+##### יצירת נתונים לטבלת Registers_For  
+- שני מפתחות זרים ע"פ טווחיהם  
+📜 [צפייה ב-`Registers_For.csv`](Stage1/pythonData/Registers_For.csv)
+
+# סקריפט היצירה: [צפייה ב-`genCSV.py`](Stage1/pythonData/genCSV.py)
+- 3 קבצי הCSV שהסקריפט יצר הועלאו בהצלחה למאגר
+![image](Stage1/pythonData/1.jpeg)
+
+![image](Stage1/pythonData/2.jpeg)
+
+![image](Stage1/pythonData/3.jpeg)
+
+
+### גיבוי  
+- קבצי הגיבוי נשמרים עם התאריך והשעה של מועד הגיבוי:
 
 
 
