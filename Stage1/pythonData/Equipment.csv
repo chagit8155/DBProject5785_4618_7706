@@ -1,0 +1,401 @@
+idE,Condition,NameE,IdR
+1,F,Lat Machine,336
+2,T,Arm Bike,381
+3,F,Treadmill,382
+4,F,Air Bike,59
+5,F,Calf Raise,25
+6,T,Resistance Band,82
+7,T,Push-up Bar,17
+8,F,Row Machine,134
+9,F,Slam Ball,397
+10,F,Barbell,106
+11,F,Grip Trainer,20
+12,T,Kettlebells,153
+13,T,Bench Press,301
+14,T,Glute Band,133
+15,F,Spin Bike,396
+16,T,Dip Bars,202
+17,F,Smith Machine,67
+18,T,Pull-up Bar,247
+19,F,Wrist Roller,63
+20,T,Slam Ball,29
+21,T,Plyo Box,311
+22,T,Dip Bars,321
+23,T,Hip Abductor,192
+24,F,Leg Press,376
+25,T,Glute Band,136
+26,T,Wrist Roller,84
+27,T,Resistance Band,171
+28,F,Row Machine,87
+29,T,Ab Roller,182
+30,F,Leg Press,233
+31,T,Grip Trainer,266
+32,T,Grip Trainer,281
+33,F,Bosu Ball,238
+34,F,Air Bike,304
+35,F,Plyo Box,202
+36,T,Power Rack,149
+37,T,Punch Bag,304
+38,T,Cable Tower,126
+39,T,Kettlebells,108
+40,F,EZ Curl Bar,165
+41,F,Push-up Bar,277
+42,T,Thigh Master,233
+43,T,Power Rack,220
+44,T,Lat Machine,366
+45,T,Smith Machine,115
+46,T,Air Bike,253
+47,T,Pull-up Bar,240
+48,T,Jump Rope,125
+49,T,Smith Machine,267
+50,T,Jump Rope,287
+51,T,Barbell,157
+52,F,Spin Bike,72
+53,T,Stepper,127
+54,T,Trap Bar,93
+55,T,Weight Plate,303
+56,T,Dip Bars,374
+57,T,Arm Bike,296
+58,F,Grip Trainer,338
+59,T,Glute Band,71
+60,T,Back Ext,4
+61,T,Back Ext,103
+62,F,Dumbbells,143
+63,F,Slam Ball,177
+64,T,Row Machine,269
+65,F,Cable Tower,392
+66,F,Trap Bar,44
+67,F,Hip Abductor,343
+68,F,Plyo Box,105
+69,T,Thigh Master,260
+70,F,Yoga Mats,127
+71,T,Push-up Bar,164
+72,T,Smith Machine,251
+73,T,Spin Bike,333
+74,T,Treadmill,36
+75,F,Calf Raise,303
+76,F,Treadmill,237
+77,T,Plyo Box,129
+78,F,Chest Fly,177
+79,T,Lat Machine,388
+80,T,Smith Machine,275
+81,F,Air Bike,5
+82,F,Calf Raise,134
+83,F,Bench Press,144
+84,F,Dip Bars,333
+85,T,Power Rack,217
+86,T,Leg Press,312
+87,T,Ab Roller,330
+88,F,Glute Band,218
+89,F,Back Ext,167
+90,F,Chest Fly,262
+91,T,Thigh Master,2
+92,T,Core Trainer,332
+93,F,Med Ball,390
+94,F,Resistance Band,312
+95,F,Med Ball,143
+96,T,Chest Fly,22
+97,F,Lat Machine,35
+98,F,Wrist Roller,167
+99,T,Glute Band,265
+100,F,Spin Bike,294
+101,T,Row Machine,169
+102,F,Push-up Bar,242
+103,F,Push-up Bar,157
+104,F,Hip Abductor,51
+105,T,Chest Fly,40
+106,F,Dip Bars,129
+107,T,Trap Bar,278
+108,F,Glute Band,224
+109,F,Jump Rope,129
+110,T,EZ Curl Bar,110
+111,F,Resistance Band,150
+112,T,Grip Trainer,210
+113,F,Trap Bar,239
+114,T,Calf Raise,399
+115,F,Thigh Master,176
+116,F,Jump Rope,145
+117,T,Back Ext,82
+118,F,Yoga Mats,1
+119,F,Back Ext,20
+120,F,Cable Tower,196
+121,T,Resistance Band,344
+122,F,Ab Roller,123
+123,T,Lat Machine,285
+124,F,Cable Tower,142
+125,T,Power Rack,113
+126,F,Pull-up Bar,356
+127,F,Dumbbells,183
+128,T,Resistance Band,22
+129,F,Resistance Band,198
+130,T,Pull-up Bar,168
+131,T,Barbell,253
+132,T,Air Bike,166
+133,T,Weight Plate,132
+134,F,Stepper,394
+135,F,Squat Rack,334
+136,F,Spin Bike,280
+137,F,Dumbbells,255
+138,F,Dip Bars,100
+139,F,Punch Bag,116
+140,F,Chest Fly,276
+141,F,Dumbbells,250
+142,F,Dumbbells,235
+143,F,Dumbbells,125
+144,T,Thigh Master,399
+145,T,Leg Press,227
+146,F,Core Trainer,183
+147,F,Bosu Ball,94
+148,T,Punch Bag,141
+149,T,Dumbbells,106
+150,F,Slam Ball,257
+151,F,Leg Press,185
+152,F,Stepper,12
+153,F,Back Ext,50
+154,T,Cable Tower,192
+155,F,Barbell,124
+156,F,Power Rack,342
+157,F,Power Rack,69
+158,F,Dip Bars,41
+159,F,Power Rack,360
+160,T,Trap Bar,231
+161,T,Punch Bag,123
+162,F,Trap Bar,68
+163,T,Arm Bike,367
+164,F,Smith Machine,124
+165,T,Lat Machine,172
+166,F,Push-up Bar,298
+167,F,Plyo Box,248
+168,F,Air Bike,147
+169,F,Trap Bar,197
+170,F,Yoga Mats,164
+171,F,Resistance Band,147
+172,F,Cable Tower,325
+173,T,Slam Ball,83
+174,F,Spin Bike,16
+175,F,Weight Plate,366
+176,T,Dumbbells,33
+177,F,Stepper,199
+178,F,Wrist Roller,25
+179,F,Cable Tower,262
+180,F,Wrist Roller,91
+181,F,Smith Machine,348
+182,T,Bench Press,288
+183,T,Row Machine,243
+184,F,Treadmill,169
+185,T,Resistance Band,355
+186,F,Treadmill,216
+187,T,Bench Press,194
+188,F,Plyo Box,306
+189,T,Plyo Box,378
+190,F,Lat Machine,6
+191,F,Yoga Mats,357
+192,T,Core Trainer,248
+193,T,Wrist Roller,323
+194,T,Smith Machine,40
+195,F,Resistance Band,288
+196,F,Glute Band,119
+197,F,Core Trainer,233
+198,F,Yoga Mats,46
+199,F,Treadmill,327
+200,F,Arm Bike,30
+201,F,Pull-up Bar,30
+202,T,Dip Bars,303
+203,F,Core Trainer,87
+204,T,Jump Rope,204
+205,T,Bench Press,316
+206,F,Treadmill,249
+207,T,Core Trainer,292
+208,F,Treadmill,262
+209,F,Calf Raise,350
+210,F,Jump Rope,26
+211,F,Core Trainer,61
+212,F,Weight Plate,218
+213,F,Arm Bike,55
+214,F,Plyo Box,254
+215,F,Leg Press,371
+216,T,Bench Press,127
+217,T,Jump Rope,205
+218,T,Weight Plate,390
+219,F,Dip Bars,337
+220,T,Treadmill,146
+221,T,Dip Bars,301
+222,F,Hip Abductor,332
+223,F,EZ Curl Bar,172
+224,F,EZ Curl Bar,287
+225,F,Cable Tower,187
+226,F,Squat Rack,293
+227,T,Bench Press,284
+228,T,Bosu Ball,16
+229,F,Jump Rope,30
+230,T,Squat Rack,304
+231,T,Core Trainer,320
+232,T,Bench Press,197
+233,F,Trap Bar,328
+234,T,Stepper,137
+235,T,Jump Rope,8
+236,T,Back Ext,116
+237,T,Slam Ball,91
+238,T,Squat Rack,281
+239,T,Med Ball,276
+240,F,Wrist Roller,203
+241,T,Squat Rack,41
+242,F,Barbell,30
+243,T,Weight Plate,316
+244,T,Jump Rope,299
+245,F,Row Machine,357
+246,T,Smith Machine,308
+247,T,Calf Raise,366
+248,F,Grip Trainer,121
+249,T,Slam Ball,88
+250,T,Arm Bike,125
+251,F,Punch Bag,243
+252,F,Kettlebells,304
+253,F,Plyo Box,314
+254,F,Weight Plate,330
+255,F,Glute Band,387
+256,T,Lat Machine,308
+257,F,Squat Rack,253
+258,T,Bosu Ball,288
+259,F,Wrist Roller,147
+260,T,Jump Rope,373
+261,F,Glute Band,394
+262,F,Leg Press,228
+263,T,Glute Band,109
+264,T,Dumbbells,30
+265,F,Pull-up Bar,285
+266,F,Grip Trainer,201
+267,F,Spin Bike,223
+268,F,Cable Tower,23
+269,T,Jump Rope,355
+270,F,Squat Rack,149
+271,F,Leg Press,16
+272,F,EZ Curl Bar,70
+273,T,Glute Band,38
+274,T,Punch Bag,321
+275,F,Power Rack,376
+276,F,Smith Machine,354
+277,F,Treadmill,155
+278,T,Power Rack,69
+279,F,Spin Bike,68
+280,F,Calf Raise,35
+281,T,Back Ext,199
+282,F,Treadmill,92
+283,F,Med Ball,373
+284,T,Grip Trainer,2
+285,T,Stepper,229
+286,T,Leg Press,360
+287,F,Smith Machine,215
+288,T,Row Machine,324
+289,T,Hip Abductor,320
+290,F,Spin Bike,122
+291,F,Weight Plate,177
+292,F,Resistance Band,156
+293,T,Calf Raise,58
+294,T,Ab Roller,143
+295,F,Ab Roller,165
+296,T,Treadmill,36
+297,T,Thigh Master,19
+298,F,Smith Machine,136
+299,T,Thigh Master,111
+300,T,Glute Band,343
+301,F,Bench Press,188
+302,T,Barbell,289
+303,T,Thigh Master,272
+304,T,Slam Ball,67
+305,T,Trap Bar,143
+306,F,Slam Ball,122
+307,F,Arm Bike,43
+308,F,Thigh Master,86
+309,F,Stepper,26
+310,T,Kettlebells,395
+311,T,Row Machine,165
+312,T,Power Rack,37
+313,F,Slam Ball,52
+314,F,Ab Roller,149
+315,F,Barbell,238
+316,T,Core Trainer,129
+317,F,Med Ball,324
+318,T,Stepper,253
+319,T,Spin Bike,213
+320,T,Weight Plate,69
+321,F,Med Ball,26
+322,T,Grip Trainer,66
+323,T,Bench Press,395
+324,T,Core Trainer,221
+325,F,Grip Trainer,54
+326,F,Back Ext,209
+327,T,Grip Trainer,63
+328,F,Kettlebells,126
+329,F,Bosu Ball,173
+330,F,Stepper,320
+331,F,Spin Bike,358
+332,T,Stepper,149
+333,T,Back Ext,311
+334,T,Smith Machine,333
+335,T,Yoga Mats,18
+336,F,Kettlebells,136
+337,T,Lat Machine,251
+338,F,Trap Bar,309
+339,F,Power Rack,38
+340,T,Stepper,377
+341,F,Row Machine,336
+342,F,Plyo Box,385
+343,F,Pull-up Bar,240
+344,T,Med Ball,39
+345,F,Jump Rope,18
+346,F,Dumbbells,97
+347,T,Weight Plate,119
+348,T,Wrist Roller,306
+349,F,Thigh Master,350
+350,F,Grip Trainer,115
+351,F,Glute Band,332
+352,F,Calf Raise,306
+353,F,Dumbbells,319
+354,T,Lat Machine,348
+355,F,Jump Rope,82
+356,F,Chest Fly,265
+357,T,Calf Raise,358
+358,T,EZ Curl Bar,237
+359,T,Arm Bike,256
+360,F,Yoga Mats,40
+361,T,Bosu Ball,18
+362,T,EZ Curl Bar,130
+363,F,Yoga Mats,49
+364,T,Resistance Band,191
+365,F,Hip Abductor,210
+366,T,Chest Fly,269
+367,F,Jump Rope,22
+368,F,Dip Bars,277
+369,F,Calf Raise,262
+370,F,Ab Roller,383
+371,T,Chest Fly,112
+372,T,Ab Roller,385
+373,F,Spin Bike,182
+374,T,Chest Fly,18
+375,T,Glute Band,192
+376,F,Dumbbells,112
+377,F,Cable Tower,283
+378,T,Wrist Roller,325
+379,T,Barbell,336
+380,T,Wrist Roller,302
+381,T,Dumbbells,357
+382,T,Yoga Mats,25
+383,F,Weight Plate,240
+384,F,Barbell,7
+385,T,Pull-up Bar,378
+386,F,Leg Press,186
+387,T,Med Ball,124
+388,T,Chest Fly,53
+389,T,Spin Bike,251
+390,F,Punch Bag,214
+391,F,EZ Curl Bar,83
+392,T,Bench Press,226
+393,T,Med Ball,255
+394,F,Stepper,315
+395,F,Push-up Bar,365
+396,T,Weight Plate,377
+397,F,Core Trainer,353
+398,T,Thigh Master,273
+399,F,Row Machine,1
+400,F,Trap Bar,126
