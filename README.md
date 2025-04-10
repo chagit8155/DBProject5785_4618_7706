@@ -153,6 +153,22 @@
 
 ### גיבוי  
 - קבצי הגיבוי נשמרים עם התאריך והשעה של מועד הגיבוי:
+  
+📜 [צפייה בתיקיית הגיבויים-`Backups`](Stage1)
+
+- הצד המגבה: עומד על המאגר, לחיצה ימנית ובוחר את האפשרות של Backup.
+- יש לבחור בפורמט Tar ולקרא לקובץ בשם backup_dd_mm_yy_hh_mi למען הסדר הטוב.
+ 
+
+
+![1](https://github.com/user-attachments/assets/5319fd11-2a44-436d-9854-ab3b31784da2)
+
+
+- הצד המשחזר: דואג שקובץ הגיבוי שנוצר יהיה נמצא אצלו בStorage Manager, עומד על המאגר, לחיצה ימנית ובוחר את האפשרות של Restore
+- ובוחר את קובץ הגיבוי המדובר
+  
+![2](https://github.com/user-attachments/assets/b0399c59-ba81-4cc5-8699-3ca952d856ef)
+
 
 ## שלב 2: אינטגרציה 
 
