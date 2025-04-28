@@ -180,7 +180,132 @@
 📜 [צפייה בקובץ השאילתות-`Queries.sql`](Stage2)
 
 #### 8 שאילתות SELECT:
-1. 
+#### שאילתה 1
+**תיאור:**
+השאילתה מחזירה את כל המדריכים (trainers) שהם גברים. היא מציגה את תעודת הזהות שלהם, שם, גיל ורמת ניסיון. התוצאה ממויינת לפי רמת הניסיון בסדר עולה ומיון משני לפי שם בסדר אלפביתי.
+
+**השאילתה רצה בהצלחה:**
+
+![WhatsApp Image 2025-04-28 at 02 44 08](https://github.com/user-attachments/assets/5f5dec79-6b7e-4a87-ab93-dc5307512d2a)
+
+
+**צילום תוצאת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 02 44 42](https://github.com/user-attachments/assets/a6b5ab5e-ce04-47fe-9ec8-ded0c93f2ae5)
+
+---
+
+#### שאילתה 2
+**תיאור:**
+השאילתה מחזירה את מספר השיעורים שכל מדריך מלמד, יחד עם שמו. התוצאות ממויינות לפי כמות השיעורים בסדר יורד.
+
+**השאילתה רצה בהצלחה:**
+
+![WhatsApp Image 2025-04-28 at 02 56 14](https://github.com/user-attachments/assets/6cd9c263-2f27-4a17-bd28-d36cddff4984)
+
+
+**צילום תוצאת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 02 56 43](https://github.com/user-attachments/assets/a1f47a12-da63-4fcb-a513-12661c1664f7)
+
+---
+
+#### שאילתה 3
+**תיאור:**
+השאילתה מציגה את רשימת המנויים שהמנוי שלהם יפוג בחודש הבא, כולל שם המנוי ותאריך התפוגה. התוצאות ממויינות לפי תאריך התפוגה בסדר עולה.
+
+**הרצת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 05 32](https://github.com/user-attachments/assets/497771e1-4532-4247-a884-88f59a434849)
+
+
+
+**צילום תוצאת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 05 49](https://github.com/user-attachments/assets/fd4f8847-51b5-47fa-bcc9-f821ff68ff44)
+
+---
+
+#### שאילתה 4
+**תיאור:**
+השאילתה מציגה את פרטי השיעורים שמתקיימים היום: יום בשבוע, מזהה שיעור, שעה, סוג שיעור, מזהה המדריך, רמת הניסיון של המדריך ושם החדר.
+
+**הרצת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 08 48](https://github.com/user-attachments/assets/0c8d86b4-4f1d-4578-8f0d-1a24876ed827)
+
+
+**צילום תוצאת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 09 44](https://github.com/user-attachments/assets/44323c1f-7e7a-4230-9736-f6a01dcafe18)
+
+
+
+---
+
+#### שאילתה 5
+**תיאור:**
+השאילתה מציגה את כל השיעורים אליהם מנוי בעל מזהה 1 רשום, כולל שם המנוי, מזהה השיעור, סוג השיעור, יום בשבוע, שעה ושם החדר.
+
+**הרצת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 21 03](https://github.com/user-attachments/assets/df75567d-91bf-41c6-a963-ad6b9e3df9f3)
+
+
+**תוצאת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 21 21](https://github.com/user-attachments/assets/875146a8-7145-45ba-9bfe-1887edd48031)
+
+---
+
+#### שאילתה 6
+**תיאור:**
+השאילתה מציגה את פרטי החדרים הפנויים היום (חדרים שלא מתקיים בהם שיעור), כולל מזהה החדר, שם החדר ותכולת החדר. התוצאות ממויינות לפי שם החדר.
+
+**הרצת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 23 56](https://github.com/user-attachments/assets/1321a298-869c-406a-8944-30cefac72d54)
+
+
+
+**תוצאת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 24 27](https://github.com/user-attachments/assets/79adb7d3-709a-4e78-b05d-5f77504f8e31)
+
+---
+
+#### שאילתה 7
+**תיאור:**
+השאילתה מציגה את פרטי המנויים שרשומים לשיעור מסויים (מזהה שיעור 5). מוצגים תעודת זהות, שם, מגדר ותאריך לידה של כל מנוי.
+
+
+**הרצת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 31 58](https://github.com/user-attachments/assets/ef5effa7-f2ba-41b1-9ddf-84c9d02983ed)
+
+**תוצאת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 32 17](https://github.com/user-attachments/assets/791caa5f-4871-4950-baa7-69ce7430d189)
+
+---
+
+#### שאילתה 8
+**תיאור:**
+השאילתה מציגה את כל השיעורים שהגבלת גיל המינימלית שלהם מתאימה לגיל 19 (כלומר, המינימום הוא 19 או פחות). מוצגים מזהה שיעור, יום בשבוע, שעה, סוג שיעור, גיל מינימלי נדרש ושם החדר.
+
+**הרצת השאילתה:**
+
+![WhatsApp Image 2025-04-28 at 03 34 05](https://github.com/user-attachments/assets/0ff2f21e-5f0c-4850-bc92-bf1a6354e951)
+
+
+**תוצאת השאילתה:**
+![WhatsApp Image 2025-04-28 at 03 34 18](https://github.com/user-attachments/assets/5da9be7b-598a-4dd4-a5f1-a502a51b8dd7)
+
+---
+### 3 שאילתות DELETE:
+
+### 3 שאילתות UPDATE:
+
 
 ### אילוצים
 
