@@ -8,11 +8,13 @@
   - [סקריפטים ב-SQL](#סקריפטים-ב-sql)  
   - [נתונים](#נתונים)  
   - [גיבוי](#גיבוי)  
-- [שלב 2: אינטגרציה ושאילתות](#שלב-2-אינטגרציה)
-  - [שאילתות](#שאילתות)
+- [שלב 2: שאילתות ואילוצים](#שלב-2-שאילתות ואילוצים)
+  - [שאילתות SELECT](#שאילתות-SELECT)
+  - [שאילתות DELETE](#שאילתות-DELETE)
+  - [שאילתות UPDATE](#שאילתות-UPDATE)
   - [אילוצים](#אילוצים)
-  - [rollback  ו commit ](#rollback  ו commit )
-  - [גיבוי מעודכן](#גיבוי מעודכן)
+  - [ביצוע Rollback וCommit ](#ביצוע-rollbac-ו-commit )
+  - [גיבוי מעודכן](#גיבוי-מעודכן)
 
 
 ## שלב 1: תכנון ובניית מסד הנתונים  
@@ -176,10 +178,9 @@
 
 
 ## שלב 2: אינטגרציה ושאילתות
-### שאילתות 
-📜 [צפייה בקובץ השאילתות-`Queries.sql`](Stage2)
+### שאילתות SELECT
+📜 [צפייה בקובץ כל השאילתות-`Queries.sql`](Stage2)
 
-#### 8 שאילתות SELECT:
 #### שאילתה 1
 **תיאור:**
 השאילתה מחזירה את כל המדריכים (trainers) שהם גברים. היא מציגה את תעודת הזהות שלהם, שם, גיל ורמת ניסיון. התוצאה ממויינת לפי רמת הניסיון בסדר עולה ומיון משני לפי שם בסדר אלפביתי.
@@ -302,9 +303,11 @@
 ![WhatsApp Image 2025-04-28 at 03 34 18](https://github.com/user-attachments/assets/5da9be7b-598a-4dd4-a5f1-a502a51b8dd7)
 
 ---
-### 3 שאילתות DELETE:
 
-### 3 שאילתות UPDATE:
+### שאילתות DELETE
+
+
+### שאילתות UPDATE
 
 
 ### אילוצים
@@ -386,5 +389,75 @@ VALUES (402, '2025-05-01', '2025-04-01');
 
 
 ![WhatsApp Image 2025-04-27 at 19 44 59](https://github.com/user-attachments/assets/f57b0240-2d5e-4451-8265-81e35cef354e)
+
+### ביצוע Rollback ו Commit
+
+📜 [צפייה בקוד-`RollbackCommit.sql`](Stage2)
+
+#### ביצוע עדכון עם ROLLBACK
+
+#### 1. הצגת מצב טבלת Room לפני העדכון:
+ביצענו שאילתה להצגת כלל הרשומות בטבלת Room. בשלב זה ניתן לראות את המצב המקורי של החדרים בבסיס הנתונים, לפני כל שינוי.
+
+![WhatsApp Image 2025-04-28 at 11 54 21](https://github.com/user-attachments/assets/776e5f7f-03d6-4f26-be92-f4aa26788503)
+
+
+
+#### 2. ביצוע עדכון:
+עדכנו את שם החדר בעל המזהה IdR = 1 ל- 'BeforeRollback'.
+
+#### 3. הצגת מצב טבלת Room לאחר העדכון:
+
+![WhatsApp Image 2025-04-28 at 03 44 11](https://github.com/user-attachments/assets/c877402f-a937-4641-b578-1cc80cd1f95b)
+
+בשלב זה, לאחר ביצוע פקודת העדכון, שם החדר עם מזהה 1 השתנה ל- 'BeforeRollback'. עם זאת, מאחר שטרנזקציה זו טרם בוצעה COMMIT, העדכון עדיין לא נשמר לצמיתות בבסיס הנתונים.
+
+#### 4. ביצוע ROLLBACK:
+הפעלנו את פקודת ROLLBACK, אשר מבטלת את כל השינויים שבוצעו מאז תחילת הטרנזקציה. בכך חזר בסיס הנתונים למצבו הקודם.
+
+#### 5. הצגת מצב טבלת Room לאחר ה-ROLLBACK:
+ביצענו שוב שאילתה להצגת תוכן הטבלה. ניתן לראות שהשינוי שבוצע התבטל והמידע בטבלה חזר להיות כפי שהיה לפני העדכון.
+
+![WhatsApp Image 2025-04-28 at 03 47 08](https://github.com/user-attachments/assets/31a4be2b-2a55-4cc7-af7f-9c264f15c520)
+
+
+---
+
+#### ביצוע עדכון עם COMMIT
+
+#### 1. הצגת מצב טבלת Room לפני העדכון:
+ביצענו שוב שאילתה להצגת תוכן הטבלה, לוודא שאנו מתחילים מהמצב העדכני והמקורי לאחר ה-ROLLBACK.
+
+
+#### 2. ביצוע עדכון:
+ביצענו עדכון נוסף על טבלת Room, הפעם שינינו את שם החדר בעל מזהה IdR = 1 ל- 'AfterCommit'.
+
+#### 3. הצגת מצב טבלת Room לאחר העדכון:
+לאחר העדכון, שם החדר שונה ל- 'AfterCommit'. השינוי עדיין זמני עד ביצוע COMMIT.
+
+#### 4. ביצוע COMMIT:
+הרצנו את פקודת COMMIT, אשר מאשרת את כל השינויים שבוצעו בטרנזקציה ומבצעת אותם לצמיתות בבסיס הנתונים.
+
+#### 5. הצגת מצב טבלת Room לאחר ה-COMMIT:
+לאחר ביצוע ה-COMMIT, בצענו שוב שאילתה על הטבלה וראינו כי שם החדר עודכן ל- 'AfterCommit' באופן קבוע.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
