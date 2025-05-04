@@ -3,7 +3,7 @@ CREATE TABLE if not exists Person --
   Id NUMERIC(3) ,
   Gender VARCHAR(1) NOT NULL CHECK (Gender IN ('F', 'M')),
   DateOfBirth DATE NOT NULL CHECK (DateOfBirth <= CURRENT_DATE - INTERVAL '16 years'),
-  Name VARCHAR(15),
+  Name VARCHAR(30),
   PRIMARY KEY (Id)
 );
 
@@ -12,7 +12,7 @@ CREATE TABLE if not exists ClassType--
   IdCT NUMERIC(3) ,
   NameType VARCHAR(15) ,
   MinAge NUMERIC(2) NOT NULL CHECK (MinAge >= 16),
-  RequiredExperience NOT NULL NUMERIC(1) CHECK (RequiredExperience IN (1, 2, 3)),
+  RequiredExperience NUMERIC(1) NOT NULL  CHECK (RequiredExperience IN (1, 2, 3)),
   PRIMARY KEY (IdCT)
 );
 
