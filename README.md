@@ -385,6 +385,98 @@
 
 ### שאילתות UPDATE
 
+#### ❖ שאילתה 1 – הארכת מנוי לחברים ותיקים
+
+**תיאור:**
+השאילתה מזההה את המנויים שבין תאריך הרשמה לתאריך פקעהם המנוי עברו למעלה משנתיים (730 ימים ≈ 2 שנים). מנויים אלה מקבלים "מתנה" – הארכת המנוי בחודשיים.
+
+**צילום הרצת השאילתה:**
+![WhatsApp Image 2025-05-05 at 12 48 42](https://github.com/user-attachments/assets/2f085b6f-f924-4e84-b533-3c013c9ef8c0)
+
+```sql
+SELECT *
+FROM Member
+WHERE ExpirationDate - RegistrationDate > 365;
+```
+
+**לפני העדכון:**
+(צילום המסך יראה את תאריכי RegistrationDate ו‏ExpirationDate של המנויים רלוונטיים)
+![WhatsApp Image 2025-05-05 at 12 53 41](https://github.com/user-attachments/assets/db911099-a748-4f28-a49d-0747a0257cbd)
+
+
+
+**אחרי העדכון:**
+(צילום מסך נוסף של אותה השאילתה – הצוג של‏ExpirationDate הוצא חודשיים קדימה)
+![WhatsApp Image 2025-05-05 at 12 52 46](https://github.com/user-attachments/assets/3ec2f919-17ef-4068-a4c4-195f3c7de520)
+
+
+---
+
+#### ❖ שאילתה 2 – קידום מדריכים על סמך פעילות
+
+**תיאור:**
+השאילתה מזההה מדריכים שהעבירו למעלה מי-100 שיעורים בשנה האחרונה. למדריכים אלה תעלה רמת הניסיון בעד דרגה אחת, עד למקסימום של דרגה 3.
+
+**הרצת השאילתה:**
+
+
+**תוצאות השאילתה:**
+
+```sql
+SELECT
+  T.Id,
+  T.ExperienceLevel AS current_experience,
+  LEAST(T.ExperienceLevel + 1, 3) AS new_experience
+FROM Trainer T
+WHERE T.Id IN (
+  SELECT Id
+  FROM Class
+  GROUP BY Id
+  HAVING COUNT(*) * 4 * 12 >= 100
+);
+```
+
+**לפני העדכון:**
+(צילום שמרא את ExperienceLevel הנוכחי ואת הדרגה החדשה)
+
+![WhatsApp Image 2025-05-05 at 13 20 08](https://github.com/user-attachments/assets/bd8fca6a-06b7-42d0-b398-f2203c095981)
+
+
+**אחרי העדכון:**
+(צילום חוזר – שמרא שהדרגה עודכנה)
+![WhatsApp Image 2025-05-05 at 13 19 31](https://github.com/user-attachments/assets/24d21797-cb31-4d6e-aaec-cc774c892867)
+
+
+
+
+---
+
+#### ❖ שאילתה 3 – החלפת ציוד תקול בציוד תקין אחר
+
+**תיאור:**
+השאילתה מחליפה ציוד תקול (בעל מזהה IdE = 58) בציוד תקין אחר שבעל אותו שם (NameE) ושאינו משובץ לאף חדר (כלמש IdR IS NULL). הציוד החלופי משויך לחדר שאליו שייך הציוד התקול.
+
+**תוצאת השאילתה:**
+![WhatsApp Image 2025-05-05 at 14 29 45](https://github.com/user-attachments/assets/c71a45d8-3616-457b-a44e-2125d17076d4)
+
+```sql
+SELECT *
+FROM Equipment
+WHERE IdE = 11 OR IdE = 58;
+```
+
+**לפני העדכון:**
+(צילום שבו ניתן לראות את הציוד התקול IdE = 58 ואת הציוד החלופי IdE = 11 עם IdR = NULL)
+
+![WhatsApp Image 2025-05-05 at 14 28 58](https://github.com/user-attachments/assets/2089cf2a-e04e-4efb-ad2b-2b129b3ff7b9)
+
+
+**אחרי העדכון:**
+(צילום שמרא שציוד 11 עודכן כי IdR שלו זהה ל-IdR של ציוד 58)
+![WhatsApp Image 2025-05-05 at 14 30 21](https://github.com/user-attachments/assets/4b5dc4bb-fbf7-4865-9a4a-52341e70953e)
+
+
+
 
 ### אילוצים
 
