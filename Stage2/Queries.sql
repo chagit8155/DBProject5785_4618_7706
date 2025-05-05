@@ -1,3 +1,5 @@
+-------------SELECT QUERIES------------------   
+
 -- 1:
 -- Returns all male trainers, including their ID, name, age, and experience level.
 -- The results are sorted first by experience level (ascending) and then alphabetically by name.
@@ -156,3 +158,70 @@ JOIN
     Room R ON C.IdR = R.IdR
 WHERE 
     CT.MinAge <= 19;
+
+
+
+-------------DELETE QUERIES------------------   
+
+--1:
+-- Delete trainers with low experience (level 1) who are not assigned to any class
+DELETE FROM Trainer
+WHERE ExperienceLevel = 1
+AND Id NOT IN (
+  SELECT DISTINCT Id
+  FROM Class
+);
+
+--2:
+-- Delete members whose membership expired more than one year ago
+-- and who are over 30 years old
+DELETE FROM Member
+WHERE ExpirationDate < CURRENT_DATE - INTERVAL '1 year'
+  AND Id IN (
+    SELECT Id FROM Person
+    WHERE DateOfBirth <= CURRENT_DATE - INTERVAL '30 years'
+  );
+
+--3:
+-- Delete classes that had no registered members in the past two years
+DELETE FROM Class
+WHERE IdC NOT IN (
+    SELECT DISTINCT r.IdC
+    FROM registers_for r
+    JOIN Member m ON r.Id = m.Id
+    WHERE m.RegistrationDate >= CURRENT_DATE - INTERVAL '2 years'
+);
+
+
+-------------UPDATE QUERIES------------------   
+-- Update 1
+-- Members whose membership duration is longer than two years will receive a bonus: an extension of 2 months
+UPDATE Member
+SET ExpirationDate = ExpirationDate + INTERVAL '2 months'
+WHERE ExpirationDate - RegistrationDate > 365;
+
+-- Update 2
+-- Increase experience level of trainers by 1 if they conducted more than 100 classes in the past year
+UPDATE Trainer
+SET ExperienceLevel = LEAST(ExperienceLevel + 1, 3)
+WHERE Id IN (
+  SELECT Id
+  FROM Class
+  GROUP BY Id
+  HAVING COUNT(*) * 4 * 12 >= 100
+);
+
+-- Update 3
+-- Replace broken equipment with IdE = 58 with another working equipment of the same name that is not assigned to any room (IdR IS NULL)
+UPDATE Equipment AS e_good
+SET IdR = (
+  SELECT IdR FROM Equipment WHERE IdE = 58
+)
+WHERE e_good.Condition = 'T'
+  AND e_good.IdR IS NULL
+  AND e_good.NameE = (
+    SELECT NameE FROM Equipment WHERE IdE = 58
+  );
+
+
+
