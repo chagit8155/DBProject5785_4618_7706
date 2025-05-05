@@ -419,6 +419,8 @@ WHERE ExpirationDate - RegistrationDate > 365;
 
 **הרצת השאילתה:**
 
+![WhatsApp Image 2025-05-05 at 18 31 45](https://github.com/user-attachments/assets/11b213d9-7c95-4d0c-be14-8f83d9289b7f)
+
 
 **תוצאות השאילתה:**
 
@@ -558,6 +560,7 @@ VALUES (402, '2025-05-01', '2025-04-01');
 
 ![WhatsApp Image 2025-04-27 at 19 44 59](https://github.com/user-attachments/assets/f57b0240-2d5e-4451-8265-81e35cef354e)
 
+
 ### ביצוע Rollback ו Commit
 
 📜 [צפייה בקוד-`RollbackCommit.sql`](Stage2)
@@ -566,6 +569,7 @@ VALUES (402, '2025-05-01', '2025-04-01');
 
 #### 1. הצגת מצב טבלת Room לפני העדכון:
 ביצענו שאילתה להצגת כלל הרשומות בטבלת Room. בשלב זה ניתן לראות את המצב המקורי של החדרים בבסיס הנתונים, לפני כל שינוי.
+
 
 ![WhatsApp Image 2025-04-28 at 11 54 21](https://github.com/user-attachments/assets/776e5f7f-03d6-4f26-be92-f4aa26788503)
 
@@ -577,6 +581,7 @@ VALUES (402, '2025-05-01', '2025-04-01');
 #### 3. הצגת מצב טבלת Room לאחר העדכון:
 
 ![WhatsApp Image 2025-04-28 at 03 44 11](https://github.com/user-attachments/assets/c877402f-a937-4641-b578-1cc80cd1f95b)
+
 
 בשלב זה, לאחר ביצוע פקודת העדכון, שם החדר עם מזהה 1 השתנה ל- 'BeforeRollback'. עם זאת, מאחר שטרנזקציה זו טרם בוצעה COMMIT, העדכון עדיין לא נשמר לצמיתות בבסיס הנתונים.
 
@@ -595,6 +600,7 @@ VALUES (402, '2025-05-01', '2025-04-01');
 
 #### 1. הצגת מצב טבלת Room לפני העדכון:
 ביצענו שוב שאילתה להצגת תוכן הטבלה, לוודא שאנו מתחילים מהמצב העדכני והמקורי לאחר ה-ROLLBACK.
+
 ![WhatsApp Image 2025-04-28 at 12 23 15](https://github.com/user-attachments/assets/52bbcfa6-d852-4aa7-afe5-9d718e764356)
 
 
@@ -603,6 +609,7 @@ VALUES (402, '2025-05-01', '2025-04-01');
 
 #### 3. הצגת מצב טבלת Room לאחר העדכון:
 לאחר העדכון, הקובלת אכן השתנתה ל-45. השינוי עדיין זמני עד ביצוע COMMIT.
+
 
 ![WhatsApp Image 2025-04-28 at 12 36 04](https://github.com/user-attachments/assets/528df950-c1c4-40af-aaba-171d9f02d813)
 
@@ -613,14 +620,16 @@ VALUES (402, '2025-05-01', '2025-04-01');
 
 #### 5. הצגת מצב טבלת Room לאחר ה-COMMIT:
 לאחר ביצוע ה-COMMIT, בצענו שוב שאילתה על הטבלה וראינו כי קיבלת החדר עודכנה ל- 45 באופן קבוע.
+
 ![WhatsApp Image 2025-04-28 at 12 41 33](https://github.com/user-attachments/assets/f24b2b5e-0e2e-4f43-afb7-5a4a6a3d9990)
 
 
 
 
 
+### גיבוי מעודכן
 
-
+📜 [צפייה בקוד-`backup_05_05_25_18_19`](Stage2)
 
 
 
