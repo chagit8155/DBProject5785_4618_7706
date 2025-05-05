@@ -566,7 +566,7 @@ VALUES (402, '2025-05-01', '2025-04-01');
 ![WhatsApp Image 2025-04-27 at 19 44 59](https://github.com/user-attachments/assets/f57b0240-2d5e-4451-8265-81e35cef354e)
 
 
-### ביצוע Rollback ו Commit
+### ביצוע Rollback וCommit
 
 📜 [צפייה בקוד-`RollbackCommit.sql`](Stage2)
 
