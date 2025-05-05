@@ -391,6 +391,8 @@
 השאילתה מזההה את המנויים שבין תאריך הרשמה לתאריך פקעהם המנוי עברו למעלה משנתיים (730 ימים ≈ 2 שנים). מנויים אלה מקבלים "מתנה" – הארכת המנוי בחודשיים.
 
 **צילום הרצת השאילתה:**
+
+
 ![WhatsApp Image 2025-05-05 at 12 48 42](https://github.com/user-attachments/assets/2f085b6f-f924-4e84-b533-3c013c9ef8c0)
 
 ```sql
@@ -401,12 +403,14 @@ WHERE ExpirationDate - RegistrationDate > 365;
 
 **לפני העדכון:**
 (צילום המסך יראה את תאריכי RegistrationDate ו‏ExpirationDate של המנויים רלוונטיים)
+
 ![WhatsApp Image 2025-05-05 at 12 53 41](https://github.com/user-attachments/assets/db911099-a748-4f28-a49d-0747a0257cbd)
 
 
 
 **אחרי העדכון:**
 (צילום מסך נוסף של אותה השאילתה – הצוג של‏ExpirationDate הוצא חודשיים קדימה)
+
 ![WhatsApp Image 2025-05-05 at 12 52 46](https://github.com/user-attachments/assets/3ec2f919-17ef-4068-a4c4-195f3c7de520)
 
 
@@ -446,6 +450,7 @@ WHERE T.Id IN (
 
 **אחרי העדכון:**
 (צילום חוזר – שמרא שהדרגה עודכנה)
+
 ![WhatsApp Image 2025-05-05 at 13 19 31](https://github.com/user-attachments/assets/24d21797-cb31-4d6e-aaec-cc774c892867)
 
 
