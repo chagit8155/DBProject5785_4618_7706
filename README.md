@@ -15,6 +15,19 @@
   - [אילוצים](#אילוצים)
   - [ביצוע Rollback וCommit ](#ביצוע-rollbac-ו-commit )
   - [גיבוי מעודכן](#גיבוי-מעודכן)
+- [שלב 3: אינטגרציה ומבטים](#שלב-3-אינטגרציה-ומבטים)
+  - [מבוא](#מבוא)
+  - [תרשים DSD של המערכת החדשה](#תרשים-DSD-של-המערכת-החדשה)
+  - [תהליך הנדסה הפוכה (Reverse Engineering)](#תהליך-הנדסה-הפוכה) 
+  - [תרשים ERD של המערכת החדשה](#תרשים-ERD-של-המערכת-החדשה)
+  - [ניתוח והשוואת המערכות](#ניתוח-והשוואת-המערכות)
+  - [תהליך האינטגרציה](#תהליך-האינטגרציה)
+  - [תרשים ERD משולב](#תרשים-ERD-משולב)
+  - [החלטות אינטגרציה](#החלטות-אינטגרציה)
+  - [תהליך מיפוי הנתונים](#תהליך-מיפוי-הנתונים)
+  - [הסבר הפקודות SQL](#הסבר-הפקודות-sql)
+  - [אתגרים ופתרונות](#אתגרים-ופתרונות)
+  - [מסקנות](#מסקנות)
 
 
 ## שלב 1: תכנון ובניית מסד הנתונים  
@@ -641,15 +654,339 @@ VALUES (402, '2025-05-01', '2025-04-01');
 
 
 
+## שלב 3: אינטגרציה ומבטים
+---
+
+### מבוא
+
+במסגרת שלב ג' של הפרויקט, ביצענו אינטגרציה של שני מערכות בסיסי נתונים עצמאיות:
+- **מערכת מקורית**: מערכת ניהול מכון כושר
+- **מערכת חדשה**: מערכת ניהול חוגי ספורט
+
+המטרה: ליצור מערכת משולבת אחת המכילה את כל הפונקציונליות של שתי המערכות, תוך שמירה על תקינות הנתונים והיחסים ביניהם.
+
+---
+### תרשים DSD של המערכת החדשה (חוגי ספורט)
+![DSDSportClasses](https://github.com/user-attachments/assets/5e12ef0b-c928-4dd9-a149-41bd2b7228c3)
 
 
+### תהליך הנדסה הפוכה (Reverse Engineering)
 
 
+### שלב 1: יצירת DSD מגיבוי המס"ד שקיבלנו
+
+מתוך הקובץ `CreateTables.sql`  ומה-DSD שיתווצרו אוטומטית מהגיבוי, זיהינו את הטבלאות הבאות:
+
+#### טבלאות הליבה:
+- **person**: מכילה פרטי אנשים בסיסיים
+- **course**: מכילה פרטי קורסים
+- **studio**: מכילה פרטי אולמות
+- **timeslot**: מכילה זמני השיעורים
+- **equipment**: מכילה פרטי ציוד
+
+#### טבלאות התמחות:
+- **participant**: יורשת מ-person (מתאמנים)
+- **trainer**: יורשת מ-person (מדריכים)
+
+#### טבלאות קישור:
+- **class**: שיעור (ישות חלשה)
+- **enrolled**: רישום למשתתפים
+- **require**: דרישות ציוד לקורסים
+
+### שלב 2: זיהוי סוגי הישויות
+
+#### ישויות רגילות:
+```sql
+-- מזוהות על פי מפתח ראשי פשוט
+person: PRIMARY KEY (person_id)
+course: PRIMARY KEY (course_id)
+studio: PRIMARY KEY (studio_id)
+timeslot: PRIMARY KEY (timeslot_id)
+equipment: PRIMARY KEY (eq_id)
+```
+
+#### ישות חלשה:
+```sql
+-- מזוהית על פי מפתח ראשי מורכב ממפתחות זרים
+class: PRIMARY KEY (timeslot_id, studio_id)
+```
+
+**הסבר למה Class היא ישות חלשה:**
+1. המפתח הראשי מורכב משני מפתחות זרים
+2. אין מזהה עצמאי לשיעור
+3. קיום השיעור תלוי במקום ובזמן
+4. לא יכול להיות שיעור ללא timeslot ו-studio
+
+##### יחסי הכללה (ISA):
+```sql
+-- מזוהים כאשר המפתח הראשי הוא גם מפתח זר
+participant: PRIMARY KEY (person_id) + FOREIGN KEY → person
+trainer: PRIMARY KEY (person_id) + FOREIGN KEY → person
+```
+
+#### שלב 3: זיהוי יחסים
+
+##### יחסי 1:N:
+- **course → class**: קורס אחד יכול להיות בכמה שיעורים
+- **trainer → class**: מדריך אחד יכול ללמד כמה שיעורים
+- **timeslot → class**: זמן אחד יכול לכלול כמה שיעורים (באולמות שונים)
+- **studio → class**: אולם אחד יכול לארח כמה שיעורים (בזמנים שונים)
+
+##### יחסי M:N:
+- **participant ↔ class** (דרך enrolled): מתאמן יכול להירשם לכמה שיעורים, שיעור יכול לכלול כמה מתאמנים
+- **course ↔ equipment** (דרך require): קורס יכול לדרוש כמה ציודים, ציוד יכול לשמש כמה קורסים
+
+---
+
+### תרשים ERD של המערכת החדשה
+![sportClassesERD](https://github.com/user-attachments/assets/f8c409a7-d4ef-43f2-a964-3ee19926da08)
+
+---
+
+### ניתוח והשוואת המערכות
+
+#### מערכת מקורית (מכון כושר):
+**ישויות עיקריות:**
+- Person (בסיס)
+- Member, Trainer (התמחויות)
+- ClassType (סוגי שיעורים)
+- Room (חדרים)
+- Equipment (ציוד)
+- Class (שיעורים)
+
+**מאפיינים:**
+- מכוון לניהול חברות
+- דגש על חדרים פיזיים
+- מערכת סיווג פשוטה של שיעורים
+
+#### מערכת חדשה (שיעורי ספורט):
+**ישויות עיקריות:**
+- Person (בסיס)
+- Participant, Trainer (התמחויות)
+- Course (קורסים מפורטים)
+- Studio (אולמות)
+- TimeSlot (זמנים מובנים)
+- Equipment (ציוד מתקדם)
+- Class (שיעורים מורכבים)
+
+**מאפיינים:**
+- מכוון למגוון פעילויות ספורט
+- דגש על תזמון מדויק
+- מערכת מחירים מפורטת
+- הגבלות גיל מתקדמות
+
+---
+
+## תרשים ERD משולב
+![IntegrationERD](https://github.com/user-attachments/assets/bdc65ebc-f68d-498f-9716-2edd91a965b0)
 
 
+## תהליך האינטגרציה
+
+### שלב 1: זיהוי נקודות המפגש
+
+**ישויות זהות:**
+- Person ↔ Person
+- Member ↔ Participant
+- Trainer ↔ Trainer
+- Equipment ↔ Equipment
+- Class ↔ Class
+
+**ישויות דומות:**
+- ClassType ↔ Course
+- Room ↔ Studio
+- (חסר) ↔ TimeSlot
+
+#### שלב 2: החלטות מיזוג
+
+##### החלטה 1: מיזוג Person
+**בעיה:** שתי המערכות מכילות טבלת Person עם שדות שונים
+**פתרון:** השלמת השדות החסרים
+```sql
+-- הוספת שדות חסרים למערכת המקורית
+ALTER TABLE Person ADD COLUMN email VARCHAR(100);
+ALTER TABLE Person ADD COLUMN phone VARCHAR(20);
+```
+
+##### החלטה 2: איחוד ClassType ו-Course
+**בעיה:** שתי מערכות שונות לתיאור סוגי שיעורים
+**פתרון:** יצירת טבלת Course מאוחדת עם כל השדות הנדרשים
+```sql
+CREATE TABLE Course (
+    course_id integer,
+    course_name VARCHAR(50),
+    required_experience NUMERIC(1,0),
+    min_age NUMERIC(2,0),
+    price NUMERIC(6,2),
+    PRIMARY KEY (course_id)
+);
+```
+
+##### החלטה 3: יצירת TimeSlot
+**בעיה:** המערכת המקורית לא מכילה ניהול זמנים מובנה
+**פתרון:** יצירת טבלת TimeSlot חדשה ומיפוי הנתונים הקיימים
+```sql
+CREATE TABLE TimeSlot (
+    timeslot_id integer,
+    day character varying(15),
+    start_time character varying(15),
+    end_time character varying(15),
+    PRIMARY KEY (timeslot_id)
+);
+```
+
+##### החלטה 4: איחוד Room ו-Studio
+**בעיה:** שתי מערכות למיקומים פיזיים
+**פתרון:** שמירה על שתי הטבלאות עם קשר ביניהן - בתוך סטודיו/מכון יש כמה חדרים
+- Room - חדרים פיזיים
+- Studio - מקומות מושגיים עם מיקום
+
+---
+
+#### תהליך מיפוי הנתונים
+
+#### מיפוי מזהים
+כדי למנוע התנגשויות במזהים, השתמשנו בהסטה:
+```sql
+-- מזהי אנשים: +1000
+INSERT INTO Person (person_id, ...)
+SELECT (person_id + 1000), ...
+FROM person_remote;
+
+-- מזהי קורסים: +1000
+INSERT INTO Course (course_id, ...)
+SELECT (course_id + 1000), ...
+FROM course_remote;
+
+-- מזהי ציוד: +1000
+INSERT INTO Equipment (eq_id, ...)
+SELECT (eq_id + 1000), ...
+FROM equipment_remote;
+```
+
+#### מיפוי נתונים חסרים
+```sql
+-- השלמת אימיילים וטלפונים אקראיים
+UPDATE Person
+SET email = LOWER(SUBSTRING(REPLACE(person_name, ' ', ''), 1, 5)) 
+           || FLOOR(random()*10000)::int || '@gmail.com',
+    phone = '05' || FLOOR(random()*100000000)::int
+WHERE email IS NULL OR phone IS NULL;
+```
+
+#### יצירת קשרים חדשים
+```sql
+-- קישור שיעורים לזמנים חדשים
+UPDATE Class c
+SET timeslot_id = t.timeslot_id
+FROM TimeSlot t
+WHERE c.DayInWeek = t.day
+  AND TO_CHAR(TO_TIMESTAMP(t.start_time, 'HH24:MI'), 'HH24') = LPAD(c.HourC, 2, '0');
+```
+
+---
+
+### הסבר הפקודות SQL
+
+#### שלב 1: הכנת הסביבה
+```sql
+-- יצירת חיבור למסד הנתונים המרוחק
+CREATE EXTENSION IF NOT EXISTS postgres_fdw;
+CREATE SERVER sportclasses_server
+FOREIGN DATA WRAPPER postgres_fdw
+OPTIONS (host 'localhost', dbname 'sport', port '5432');
+```
+
+**הסבר:** יצירת תשתית לחיבור בין שני מסדי נתונים באמצעות Foreign Data Wrapper.
+
+#### שלב 2: יצירת טבלאות זרות
+```sql
+CREATE FOREIGN TABLE person_remote (
+    person_id integer,
+    person_name character varying(80),
+    -- שאר השדות...
+) SERVER sportclasses_server
+OPTIONS (schema_name 'public', table_name 'person');
+```
+
+**הסבר:** יצירת "חלונות" לטבלאות במסד הנתונים המרוחק, המאפשרות קריאה ישירה מהטבלאות המקוריות.
+
+#### שלב 3: הכנת המבנה
+```sql
+-- הסרת אילוצים לפני שינויים
+ALTER TABLE registers_for DROP CONSTRAINT registers_for_pkey;
+
+-- שינוי סוגי נתונים
+ALTER TABLE Person ALTER COLUMN Id TYPE INTEGER;
+
+-- החזרת אילוצים
+ALTER TABLE Person ADD PRIMARY KEY (Id);
+```
+
+**הסבר:** תהליך מבוקר של שינוי מבנה הטבלאות תוך שמירה על תקינות הנתונים.
+
+#### שלב 4: העברת נתונים
+```sql
+INSERT INTO Person (person_id, person_name, Gender, birth_date, email, phone)
+SELECT 
+    (person_id + 1000), 
+    person_name, 
+    CASE 
+        WHEN LOWER(gender) = 'male' THEN 'M'
+        WHEN LOWER(gender) = 'female' THEN 'F'
+        ELSE NULL
+    END,
+    birth_date, 
+    email, 
+    phone
+FROM person_remote
+WHERE (person_id + 1000) NOT IN (SELECT person_id FROM Person);
+```
+
+**הסבר:** העברת נתונים עם התאמות:
+- הסטת מזהים למניעת התנגשויות
+- המרת ערכי מגדר לפורמט אחיד
+- בדיקת קיום למניעת כפילויות
+
+---
+
+### אתגרים ופתרונות
+
+#### אתגר 1: התנגשות מזהים
+**בעיה:** שני מסדי הנתונים משתמשים באותם מזהים
+**פתרון:** הסטה קבועה של 1000 למזהי המערכת החדשה
+
+#### אתגר 2: פורמטים שונים של נתונים
+**בעיה:** המערכות משתמשות בפורמטים שונים (M/F vs Male/Female)
+**פתרון:** פונקציות המרה עם CASE statements
+
+#### אתגר 3: שדות חסרים
+**בעיה:** טבלאות דומות עם שדות שונים
+**פתרון:** הוספת שדות חסרים עם ערכי ברירת מחדל או ערכים אקראיים
+
+#### אתגר 4: יחסים מורכבים
+**בעיה:** מבני יחסים שונים בין המערכות
+**פתרון:** יצירת טבלאות אמצע והתאמת הקשרים
+
+#### אתגר 5: תלות בזמן
+**בעיה:** המערכת המקורית לא מכילה מבנה זמנים מובנה
+**פתרון:** יצירת TimeSlot חדש ומיפוי מהשדות הקיימים
+
+---
+
+### מסקנות
+
+#### הישגים עיקריים:
+1. **אינטגרציה מוצלחת** של שתי מערכות מורכבות
+2. **שמירה על תקינות הנתונים** לאורך כל התהליך
+3. **יצירת מערכת מאוחדת** עם יכולות משופרות
+4. **פתרון בעיות תאימות** בין מערכות שונות
+
+#### שיפורים שהושגו:
+- **ניהול זמנים משופר** עם TimeSlot
+- **מערכת מחירים מפורטת** מהמערכת החדשה
+- **ניהול ציוד מתקדם** עם הגבלות גיל
+- **גמישות רישום** עם אפשרויות מגוונות
 
 
-
-
-
-
+המערכת המשולבת מספקת כעת פתרון מקיף לניהול מכוני כושר ולא מכון אחד, כלומר עם יכולת לנהל חוגי ספורט או עוד מכונים במיקומים שונים, תוך שמירה על כל הפונקציונליות המקורית של שתי המערכות.
