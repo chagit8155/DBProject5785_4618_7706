@@ -569,6 +569,7 @@ DROP TABLE ClassType CASCADE;
 -- Remove redundant columns
 ALTER TABLE Class DROP COLUMN studio_id;                -- Studio info available through room
 ALTER TABLE studio DROP COLUMN room_id;                 -- Room-studio relationship managed elsewhere
+ALTER TABLE registers_for DROP COLUMN studio_id;
 
 -- Remove duplicate classes with zero registrants
 DELETE FROM Class
@@ -600,7 +601,7 @@ ALTER TABLE certified_for RENAME COLUMN Id TO person_id;
 
 -- Add constraints to registers_for table
 ALTER TABLE registers_for
-ADD CONSTRAINT pk_registers_for PRIMARY KEY (Id, timeslot_id, studio_id);
+ADD CONSTRAINT pk_registers_for PRIMARY KEY (Id, timeslot_id, room_id);
 ALTER TABLE registers_for RENAME COLUMN Id TO person_id;
 
 -- Add data validation constraints
