@@ -16,7 +16,7 @@
   - [ביצוע Rollback וCommit ](#ביצוע-rollbac-ו-commit )
   - [גיבוי מעודכן](#גיבוי-מעודכן)
 - [שלב 3: אינטגרציה ומבטים](#שלב-3-אינטגרציה-ומבטים)
-  - [מבוא](#מבוא)
+  - [מבוא](#מבוא2)
   - [תרשים DSD של המערכת החדשה](#תרשים-DSD-של-המערכת-החדשה)
   - [תהליך הנדסה הפוכה (Reverse Engineering)](#תהליך-הנדסה-הפוכה) 
   - [תרשים ERD של המערכת החדשה](#תרשים-ERD-של-המערכת-החדשה)
@@ -28,6 +28,7 @@
   - [הסבר הפקודות SQL](#הסבר-הפקודות-sql)
   - [אתגרים ופתרונות](#אתגרים-ופתרונות)
   - [מסקנות](#מסקנות)
+  - [מבטים](#מבטים)
 
 
 ## שלב 1: תכנון ובניית מסד הנתונים  
@@ -993,4 +994,192 @@ WHERE (person_id + 1000) NOT IN (SELECT person_id FROM Person);
 
 המערכת המשולבת מספקת כעת פתרון מקיף לניהול מכוני כושר ולא מכון אחד, כלומר עם יכולת לנהל חוגי ספורט או עוד מכונים במיקומים שונים, תוך שמירה על כל הפונקציונליות המקורית של שתי המערכות.
 
+---
+### מבטים
 
+### דוח מבטים - מערכת ניהול רשת מכוני כושר
+
+#### מבט #1: מבט מנקודת המקור - מכון כושר יחיד
+##### `single_gym_management_view`
+
+##### תיאור המבט:
+מבט זה מיועד לניהול מכון כושר יחיד ומספק מידע מקיף על כל השיעורים במכון מסוים (Studio ID = 130). המבט משלב מידע מ-7 טבלאות שונות כדי להציג תמונה כוללת על פעילות המכון, כולל פרטי קורסים, מדריכים, זמני השיעורים, חדרים ומספר הנרשמים.
+
+המבט מחבר בין הטבלאות:
+- Class (שיעורים)
+- Course (קורסים) 
+- TimeSlot (זמני שיעורים)
+- Person (אנשים)
+- Trainer (מדריכים)
+- Room (חדרים)
+- Studio (סטודיואים)
+
+##### הצגת נתונים מהמבט:
+```sql
+SELECT * FROM single_gym_management_view LIMIT 10;
+```
+
+![צילום מסך 2025-06-18 025038](https://github.com/user-attachments/assets/0d1865ee-0e79-45dc-a2c2-2a1db5f0988e)
+
+---
+
+#### שאילתות על המבט הראשון
+
+##### שאילתה #1: דוח תפוסת חדרים במכון הכושר
+
+##### תיאור השאילתה:
+שאילתה זו מנתחת את ניצול החדרים במכון הכושר. היא מציגה עבור כל חדר את הקיבולת שלו, מספר השיעורים הכולל, מספר הנרשמים המקסימלי והממוצע, ואחוז התפוסה המקסימלי. התוצאות ממוינות לפי אחוז התפוסה המקסימלי בסדר יורד, מה שמאפשר לזהות את החדרים הפופולריים ביותר ואת אלו שיש בהם מקום לשיפור.
+
+##### קוד השאילתה:
+```sql
+SELECT 
+    room_name,
+    room_capacity,
+    COUNT(course_id) AS total_classes,
+    MAX(enrollment) AS max_enrollment,
+    ROUND(AVG(enrollment)::numeric, 2) AS avg_enrollment,
+    ROUND((MAX(enrollment) * 100.0 / room_capacity)::numeric, 2) AS max_capacity_percent
+FROM 
+    single_gym_management_view
+GROUP BY 
+    room_name, room_capacity
+ORDER BY 
+    max_capacity_percent DESC;
+```
+
+##### פלט השאילתה:
+
+![צילום מסך 2025-06-18 025228](https://github.com/user-attachments/assets/3dc8083b-5225-479f-8a93-b737eab7ae05)
+
+---
+
+
+##### שאילתה #2: דוח על המדריכים ורמת הניסיון במכון
+
+##### תיאור השאילתה:
+שאילתה זו מספקת ניתוח מקיף של המדריכים במכון. היא מציגה עבור כל מדריך את השם, המין, רמת הניסיון, מספר השיעורים שהוא מעביר, רשימת הקורסים שהוא מלמד, ומספר הסטודנטים הכולל שלו. התוצאות ממוינות לפי מספר השיעורים ומספר הסטודנטים, מה שמאפשר לזהות את המדריכים הפעילים ביותר ולהעריך את העומס על כל מדריך.
+
+##### קוד השאילתה:
+```sql
+SELECT 
+    trainer_name,
+    trainer_gender,
+    trainer_experience,
+    COUNT(course_id) AS classes_taught,
+    STRING_AGG(DISTINCT course_name, ', ') AS taught_courses,
+    SUM(enrollment) AS total_students
+FROM 
+    single_gym_management_view
+GROUP BY 
+    trainer_name, trainer_gender, trainer_experience
+ORDER BY 
+    classes_taught DESC, total_students DESC;
+```
+
+##### פלט השאילתה:
+
+![צילום מסך 2025-06-18 025447](https://github.com/user-attachments/assets/5d43cc1e-2ffb-4ef4-a938-549c5318c3c9)
+
+---
+
+#### מבט #2: מבט מנקודת הרשת - ניהול סטודיואים מרובים
+##### `multi_studio_network_view`
+
+##### תיאור המבט:
+מבט זה מיועד לניהול רשת של מכוני כושר מרובים ברחבי הארץ. המבט מספק מידע מקיף על כל הסטודיואים ברשת, כולל מיקום, קיבולת, קורסים, מדריכים ונתוני רישום.
+
+המבט משלב מידע מ-6 טבלאות:
+- Room (חדרים)
+- Studio (סטודיואים)
+- Class (שיעורים)
+- Course (קורסים)
+- TimeSlot (זמני שיעורים)
+- Person (אנשים)
+- registers_for (רישומים)
+
+##### הצגת נתונים מהמבט:
+```sql
+SELECT * FROM multi_studio_network_view LIMIT 10;
+```
+
+![צילום מסך 2025-06-18 030511](https://github.com/user-attachments/assets/81ec3c84-4213-4244-95bc-4ba2671aa461)
+
+---
+
+#### שאילתות על המבט השני
+
+##### שאילתה #1: השוואת ביצועים בין סטודיואים שונים
+
+##### תיאור השאילתה:
+שאילתה זה מבצעת ניתוח השוואתי מקיף בין הסטודיואים השונים ברשת. היא מציגה עבור כל סטודיו מדדי ביצועים מרכזיים כמו מספר הקורסים, זמני השיעורים, מדריכים, נרשמים, גודל שיעור ממוצע ומחיר ממוצע. התוצאות ממוינות לפי מספר הנרשמים הכולל, מה שמאפשר לזהות את הסטודיואים המצליחים ביותר ולהשוות ביצועים.
+
+##### קוד השאילתה:
+```sql
+SELECT 
+    studio_id,
+    studio_location,
+    studio_capacity,
+    COUNT(DISTINCT course_id) AS total_courses_offered,
+    COUNT(DISTINCT CONCAT(day, start_time)) AS total_timeslots,
+    COUNT(DISTINCT trainer_id) AS total_trainers,
+    SUM(enrollment) AS total_enrollment,
+    ROUND(AVG(enrollment)::numeric, 2) AS avg_class_size,
+    ROUND(AVG(course_price)::numeric, 2) AS avg_course_price
+FROM 
+    multi_studio_network_view
+WHERE 
+    course_id IS NOT NULL
+GROUP BY 
+    studio_id, studio_location, studio_capacity
+ORDER BY 
+    total_enrollment DESC;
+```
+
+##### פלט השאילתה:
+
+![צילום מסך 2025-06-18 030657](https://github.com/user-attachments/assets/44217cb6-27ad-4ed4-952f-5d29cb3176f8)
+
+
+---
+
+##### שאילתה #2: ניתוח זמני פעילות פופולריים בכל הסטודיואים
+
+##### תיאור השאילתה:
+שאילתה זו מנתחת את דפוסי הפעילות בכל הרשת לפי ימים ושעות. היא מציגה עבור כל זמן (יום ושעה) את מספר הסטודיואים שמציעים שיעורים, מספר הקורסים הייחודיים, מספר הנרשמים הכולל, ממוצע הנרשמים וממוצע ניצול הקיבולת. התוצאות ממוינות לפי מספר הנרשמים הכולל, מה שמאפשר לזהות את זמני השיא ברשת ולתכנן בהתאם.
+
+##### קוד השאילתה:
+```sql
+SELECT 
+    day,
+    start_time,
+    COUNT(DISTINCT studio_id) AS studios_with_classes,
+    COUNT(DISTINCT course_id) AS unique_courses,
+    SUM(enrollment) AS total_enrollment,
+    ROUND(AVG(enrollment)::numeric, 2) AS avg_enrollment,
+    ROUND(AVG(capacity_utilization_percent)::numeric, 2) AS avg_capacity_utilization
+FROM 
+    multi_studio_network_view
+WHERE 
+    course_id IS NOT NULL
+GROUP BY 
+    day, start_time
+ORDER BY 
+    total_enrollment DESC, day, start_time;
+```
+
+##### פלט השאילתה:
+
+![צילום מסך 2025-06-18 030657](https://github.com/user-attachments/assets/acfeb27c-dd34-4a7d-8a4d-3ba11412140a)
+
+
+---
+
+#### לסיכום
+
+המבטים שפותחו מספקים כלים ניהוליים חשובים:
+
+1. **המבט הראשון** מתמקד בניהול מכון כושר יחיد ומאפשר ניתוח מפורט של תפוסת חדרים וביצועי מדריכים.
+
+2. **המבט השני** מספק תמונה כוללת של כל הרשת ומאפשר השוואות בין סטודיואים וניתוח מגמות כלליות.
+
+השאילתות על המבטים מספקות מידע מעשי לקבלת החלטות ניהוליות, כמו זיהוי צווארי בקבוק, אופטימיזציה של לוחות זמנים, וניתוח רווחיות.
