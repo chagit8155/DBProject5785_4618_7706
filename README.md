@@ -997,10 +997,10 @@ WHERE (person_id + 1000) NOT IN (SELECT person_id FROM Person);
 ---
 ### מבטים
 
-### דוח מבטים - מערכת ניהול רשת מכוני כושר
+📜 [צפייה בקוד המבטים והשאילתות המלא-`Views.sql`](Stage3)
 
 #### מבט #1: מבט מנקודת המקור - מכון כושר יחיד
-##### `single_gym_management_view`
+##### שם: `single_gym_management_view`
 
 ##### תיאור המבט:
 מבט זה מיועד לניהול מכון כושר יחיד ומספק מידע מקיף על כל השיעורים במכון מסוים (Studio ID = 130). המבט משלב מידע מ-7 טבלאות שונות כדי להציג תמונה כוללת על פעילות המכון, כולל פרטי קורסים, מדריכים, זמני השיעורים, חדרים ומספר הנרשמים.
@@ -1083,7 +1083,7 @@ ORDER BY
 ---
 
 #### מבט #2: מבט מנקודת הרשת - ניהול סטודיואים מרובים
-##### `multi_studio_network_view`
+##### שם:`multi_studio_network_view`
 
 ##### תיאור המבט:
 מבט זה מיועד לניהול רשת של מכוני כושר מרובים ברחבי הארץ. המבט מספק מידע מקיף על כל הסטודיואים ברשת, כולל מיקום, קיבולת, קורסים, מדריכים ונתוני רישום.
