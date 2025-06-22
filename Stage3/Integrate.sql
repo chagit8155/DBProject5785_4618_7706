@@ -50,6 +50,7 @@ ALTER TABLE Member DROP CONSTRAINT member_id_fkey;                   -- Member-P
 ALTER TABLE ClassType DROP CONSTRAINT ClassType_pkey;                -- ClassType primary key
 ALTER TABLE Person DROP CONSTRAINT Person_pkey;                      -- Person primary key
 
+
 -- ============================================================================
 -- PHASE 2: DATA TYPE STANDARDIZATION
 -- ============================================================================
@@ -93,7 +94,7 @@ ALTER TABLE Equipment ADD PRIMARY KEY (IdE);                         -- Equipmen
 
 -- Composite primary keys for relationship tables
 ALTER TABLE certified_for ADD PRIMARY KEY (IdCT, Id);                -- Trainer-ClassType certification
-ALTER TABLE registers_for ADD PRIMARY KEY (Id, IdC);                 -- Member-Class registration
+--ALTER TABLE registers_for ADD PRIMARY KEY (Id, IdC);                 -- Member-Class registration
 
 -- ============================================================================
 -- PHASE 4: FOREIGN DATA WRAPPER SETUP
@@ -599,11 +600,6 @@ ADD CONSTRAINT pk_class PRIMARY KEY (timeslot_id, idr);
 -- Standardize certified_for table column names
 ALTER TABLE certified_for RENAME COLUMN Id TO person_id;
 
--- Add constraints to registers_for table
-ALTER TABLE registers_for
-ADD CONSTRAINT pk_registers_for PRIMARY KEY (Id, timeslot_id, room_id);
-ALTER TABLE registers_for RENAME COLUMN Id TO person_id;
-
 -- Add data validation constraints
 ALTER TABLE Person
 ADD CONSTRAINT chk_person_gender CHECK (Gender IN ('F', 'M'));
@@ -625,9 +621,13 @@ ADD CONSTRAINT chk_course_age CHECK (min_age >= 16);
 ALTER TABLE Trainer
 ADD CONSTRAINT chk_trainer_level CHECK (ExperienceLevel IN (1, 2, 3));
 
--- Standardize Equipment table column names
+-- Standardize table column names
 ALTER TABLE Equipment RENAME COLUMN IdE TO eq_id;
 ALTER TABLE Equipment RENAME COLUMN NameE TO eq_name;
+ALTER TABLE class RENAME COLUMN id TO person_id;
+ALTER TABLE class RENAME COLUMN idr TO room_id;
+ALTER TABLE member RENAME COLUMN id TO person_id;
+ALTER TABLE registers_for RENAME COLUMN id TO person_id;
 
 -- ============================================================================
 -- PHASE 13: FOREIGN KEY RESTORATION
@@ -635,17 +635,24 @@ ALTER TABLE Equipment RENAME COLUMN NameE TO eq_name;
 -- Restore all foreign key relationships to maintain referential integrity
 
 -- Person-based relationships
-ALTER TABLE Member ADD FOREIGN KEY (Id) REFERENCES Person(person_id) ON DELETE CASCADE;
+ALTER TABLE Member ADD FOREIGN KEY (person_id) REFERENCES Person(person_id) ON DELETE CASCADE;
 ALTER TABLE Trainer ADD FOREIGN KEY (person_id) REFERENCES Person(person_id) ON DELETE CASCADE;
 
 -- Location-based relationships
-ALTER TABLE Equipment ADD FOREIGN KEY (IdR) REFERENCES Room(room_id) ON DELETE CASCADE;
-ALTER TABLE Class ADD FOREIGN KEY (Id) REFERENCES Trainer(person_id) ON DELETE CASCADE;
-ALTER TABLE Class ADD FOREIGN KEY (IdR) REFERENCES Room(room_id) ON DELETE CASCADE;
+--ALTER TABLE Equipment ADD FOREIGN KEY (room_id) REFERENCES Room(room_id) ON DELETE CASCADE;
+ALTER TABLE Class ADD FOREIGN KEY (person_id) REFERENCES Trainer(person_id) ON DELETE CASCADE;
+ALTER TABLE Class ADD FOREIGN KEY (room_id) REFERENCES Room(room_id) ON DELETE CASCADE;
 
 -- Training and registration relationships
 ALTER TABLE certified_for ADD FOREIGN KEY (person_id) REFERENCES Trainer(person_id) ON DELETE CASCADE;
-ALTER TABLE registers_for ADD FOREIGN KEY (person_id) REFERENCES Member(Id) ON DELETE CASCADE;
+ALTER TABLE certified_for ADD FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE;
+-- Add constraints to registers_for table
+ALTER TABLE registers_for ADD PRIMARY KEY (person_id, room_id, timeslot_id); 
+ALTER TABLE registers_for
+ADD CONSTRAINT fk_registers_for_room
+FOREIGN KEY (room_id) REFERENCES room(room_id) ON DELETE CASCADE,
+ADD CONSTRAINT fk_registers_for_timeslot
+FOREIGN KEY (timeslot_id) REFERENCES timeslot(timeslot_id) ON DELETE CASCADE;
 
 -- ============================================================================
 -- PHASE 14: CLEANUP AND FINAL VALIDATION
