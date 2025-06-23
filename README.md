@@ -1647,12 +1647,11 @@ $$;
 📜 [לצפייה בקוד המלא-`‏‏program1.sql`](Stage4)
 
 #### תיאור התוכנית
-תוכנית מרכזית המבצעת ניתוח מקיף של נתוני חברים ולאחר מכן מנסה לרשם חבר לשיעור. התוכנית מציגה דוגמה לשילוב פונקציה ופרוצדורה בתוך טרנזקציה.
+תוכנית מרכזית המבצעת ניתוח מקיף של נתוני חברים ולאחר מכן מנסה לרשם חבר לשיעור. התוכנית מציגה דוגמה לשילוב פונקציה ופרוצדורה.
 
 #### רכיבי התוכנית
 - **קריאה לפונקציית ניתוח**: `analyze_member_statistics`
 - **קריאה לפרוצדורת רישום**: `register_member_to_class`
-- **ניהול טרנזקציות**: BEGIN/ROLLBACK
 - **טיפול בחריגות**: Exception handling
 
 #### הקוד
