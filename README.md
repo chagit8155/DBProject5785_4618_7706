@@ -1194,12 +1194,13 @@ ORDER BY
 📜 [להורדת קובץ הגיבוי-`backup3`](Stage3)
 
 
-# שלב ד - תכנות PL/pgSQL 
+# שלב 4: תכנות PL/pgSQL
 
 ### תקציר השלב
 בשלב זה פיתחנו תוכניות מתקדמות ב-PL/pgSQL לניהול מכון הכושר, הכוללות פונקציות, פרוצדורות, טריגרים ותוכניות ראשיות. התוכניות מתמחות בניתוח נתוני חברים, ניהול הרשמות לשיעורים, ניהול לוח זמנים של מאמנים, טיפול בציוד תקול ובקרת קיבולת שיעורים.
 
 ---
+## פונקציות
 
 ### 📊 פונקציה 1: analyze_member_statistics - ניתוח סטטיסטיקות מנוים
 
@@ -1361,6 +1362,7 @@ $$;
 **(כאן צילום של הרצת הפונקציה עם לוח זמנים של מאמן)**
 
 ---
+## פרוצדורות
 
 ### 👥 פרוצדורה 1: register_member_to_class - רישום חבר לשיעור
 
@@ -1443,8 +1445,6 @@ END;
 $$;
 ```
 
-#### הוכחת פעולה
-**(כאן צילום של הרצת הפרוצדורה עם הודעת הצלחה וכן בדיקת העדכון בטבלת registers_for)**
 
 ---
 
@@ -1495,15 +1495,14 @@ END;
 $$;
 ```
 
-#### הוכחת פעולה
-**(כאן צילום של הרצת הפרוצדורה עם הודעות התקנה של ציוד)**
 
 ---
+## טריגרים
 
-### ⚡ טריגר 1: check_membership_expiration - התראה על פקיעת חברות
+### ⚡ טריגר 1: check_membership_expiration - התראה על פקיעת מנוי
 
 #### תיאור התוכנית
-טריגר מתקדם הפועל בעת הוספה או עדכון של חברות. הטריגר בודק את מצב החברות, שולח התראות על פקיעה מתקרבת ומבטל הרשמות אוטומטית במקרה של חברות פגה.
+טריגר מתקדם הפועל בעת הוספה או עדכון של חברות. הטריגר בודק את מצב החברות, שולח התראות על פקיעה מתקרבת ומבטל הרשמות אוטומטית במקרה של מנוי שפג.
 
 #### אלמנטי תכנות בשימוש
 - **Trigger Function**: פונקציית טריגר
@@ -1560,7 +1559,7 @@ CREATE OR REPLACE TRIGGER trigger_membership_expiration
     EXECUTE FUNCTION check_membership_expiration();
 ```
 
-#### הוכחת פעולה
+#### צילם פעולה
 ** צילום של עדכון חברות עם הודעות התראה מהטריגר**
 ![צילום מסך 2025-06-23 004637](https://github.com/user-attachments/assets/b84c3411-57de-4b78-9bfc-96486a717158)
 
@@ -1628,11 +1627,12 @@ END;
 $$;
 ```
 
-#### הוכחת פעולה
+#### צילום פעולה
 **צילום של הרשמה לשיעור עם הודעת אזהרה על קיבולת או חריגה מקיבולת**
 ![צילום מסך 2025-06-23 035319](https://github.com/user-attachments/assets/ea9dd711-5444-4e15-aea9-f6752f19e04f)
 
 ---
+## תוכניות ראשיות
 
 ### 🚀 תוכנית ראשית 1: program1 - ניתוח חברים ורישום
 
@@ -1647,20 +1647,25 @@ $$;
 
 #### הקוד
 ```sql
-BEGIN;
-
--- חלק 1: אנליטיקה על חברים
 DO $$
 DECLARE
+    -- חלק האנליטיקה
     v_cursor REFCURSOR;
     v_analysis_type TEXT;
     v_metric_name TEXT;
     v_metric_value NUMERIC;
     v_details TEXT;
+
+    -- חלק הרישום
+    v_member_id INTEGER := 33;
+    v_class_id INTEGER := 1010;
 BEGIN
     RAISE NOTICE '--- Starting Member Analytics ---';
+    
+    -- פתיחת הקורסור לניתוח
     v_cursor := analyze_member_statistics(18, NULL);
 
+    -- לולאה לקריאת התוצאות
     LOOP
         FETCH NEXT FROM v_cursor INTO v_analysis_type, v_metric_name, v_metric_value, v_details;
         EXIT WHEN NOT FOUND;
@@ -1668,24 +1673,25 @@ BEGIN
             v_analysis_type, v_metric_name, v_metric_value;
     END LOOP;
 
+    -- סגירת הקורסור
     CLOSE v_cursor;
-END $$;
 
--- חלק 2: רישום חבר לקורס
-DO $$
-BEGIN
+    -- ניסיון לרשום את המשתמש
     RAISE NOTICE '--- Attempting Registration ---';
-    CALL register_member_to_class(33, 1010);
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE NOTICE 'Registration failed: %', SQLERRM;
-END $$;
+    BEGIN
+        CALL register_member_to_class(v_member_id, v_class_id);
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE NOTICE 'Registration failed: %', SQLERRM;
+    END;
 
-ROLLBACK;
+END $$;
 ```
 
-#### הוכחת פעולה
-**(כאן צילום של הרצת התוכנית הראשית עם תוצאות הניתוח והרישום)**
+#### הרצה
+**צילום של הרצת התוכנית הראשית עם תוצאות הניתוח והרישום**
+
+![צילום מסך 2025-06-23 035319](https://github.com/user-attachments/assets/aefedc46-dccd-43f6-b343-b58fc9d21a10)
 
 ---
 
@@ -1733,8 +1739,9 @@ END $$;
 ROLLBACK;
 ```
 
-#### הוכחת פעולה
-**(כאן צילום של הרצת התוכנית השנייה עם תיקון ציוד ולוח זמנים)**
+#### הרצה
+**צילום של הרצת התוכנית השנייה עם תיקון ציוד ולוח זמנים**
+![צילום מסך 2025-06-23 130540](https://github.com/user-attachments/assets/43a08096-be3a-4863-9a66-26d303d71c6b)
 
 ---
 
