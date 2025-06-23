@@ -1194,7 +1194,7 @@ ORDER BY
 
 📜 [להורדת קובץ הגיבוי-`backup3`](Stage3)
 
-
+---
 # שלב 4: תכנות בPL/pgSQL
 
 ### תקציר השלב
