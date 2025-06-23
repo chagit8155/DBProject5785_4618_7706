@@ -30,6 +30,12 @@
   - [מסקנות](#מסקנות)
   - [מבטים](#מבטים)
   - [גיבוי מעודכן](#גיבוי-מעודכן2)
+- [שלב 4: תכנות PL/pgSQL  ](#שלב-4-תכנות-PL/pgSQL)
+  - [פונקציות](#פונקציות)
+  - [פרוצדורות](#פרוצדורות)
+  - [טריגרים](#טריגרים)
+  - [תוכניות ראשיות](#תוכניות-ראשיות)
+
 ## שלב 1: תכנון ובניית מסד הנתונים  
 
 ### מבוא
@@ -1186,3 +1192,587 @@ ORDER BY
 ### גיבוי מעודכן
 
 📜 [להורדת קובץ הגיבוי-`backup3`](Stage3)
+
+
+# שלב ד - תכנות PL/pgSQL 
+
+### תקציר השלב
+בשלב זה פיתחנו תוכניות מתקדמות ב-PL/pgSQL לניהול מכון הכושר, הכוללות פונקציות, פרוצדורות, טריגרים ותוכניות ראשיות. התוכניות מתמחות בניתוח נתוני חברים, ניהול הרשמות לשיעורים, ניהול לוח זמנים של מאמנים, טיפול בציוד תקול ובקרת קיבולת שיעורים.
+
+---
+
+### 📊 פונקציה 1: analyze_member_statistics - ניתוח סטטיסטיקות מנוים
+
+### תיאור התוכנית
+פונקציה מורכבת המנתחת נתוני מנוים ומחזירה סטטיסטיקות מקיפות כולל התפלגות גילאים, סוג מנוי, מספר הרשמות לשיעורים ומצב המנוי. הפונקציה משתמשת ב-REF CURSOR להחזרת תוצאות מובנות.
+
+#### אלמנטי תכנות בשימוש
+- **Cursors**: Explicit cursors למעבר על נתוני חברים ושיעורים
+- **REF CURSOR**: החזרת תוצאות מובנות
+- **Records**: שימוש ברשומות לאחסון נתונים
+- **DML Operations**: יצירה ועדכון של טבלה זמנית
+- **Loops**: לולאת FOR למעבר על נתונים
+- **Conditionals**: הסתעפויות מורכבות לסיווג גילאים וסוגי חברויות
+- **Exception Handling**: טיפול בשגיאות
+
+#### הקוד
+```sql
+CREATE OR REPLACE FUNCTION analyze_member_statistics(
+    p_min_age INTEGER DEFAULT 18,
+    p_membership_type VARCHAR DEFAULT NULL
+) 
+RETURNS REFCURSOR
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    member_cursor CURSOR FOR 
+        SELECT m.id, p.person_name, p.birth_date, m.membership_type,
+               EXTRACT(YEAR FROM AGE(p.birth_date)) AS age,
+               m.registrationdate, m.expirationdate
+        FROM Member m
+        JOIN Person p ON m.id = p.person_id
+        WHERE EXTRACT(YEAR FROM AGE(p.birth_date)) >= p_min_age
+        AND (p_membership_type IS NULL OR m.membership_type = p_membership_type);
+
+    classes_cursor CURSOR(member_id INTEGER) FOR
+        SELECT COUNT(*) as class_count
+        FROM registers_for rf
+        WHERE rf.person_id = member_id;
+
+    member_rec RECORD;
+    class_count_rec RECORD;
+    v_total_members INTEGER := 0;
+    v_active_members INTEGER := 0;
+    v_expired_members INTEGER := 0;
+    v_avg_age NUMERIC := 0;
+    v_total_classes INTEGER := 0;
+    v_result_cursor REFCURSOR := 'member_analytics_cursor';
+
+BEGIN
+    -- יצירת טבלה זמנית לתוצאות
+    DROP TABLE IF EXISTS temp_member_analytics;
+    CREATE TEMP TABLE temp_member_analytics (
+        analysis_type VARCHAR(50),
+        metric_name VARCHAR(100),
+        metric_value NUMERIC,
+        details TEXT
+    );
+
+    -- עיבוד נתוני חברים
+    FOR member_rec IN member_cursor LOOP
+        v_total_members := v_total_members + 1;
+
+        -- בדיקת מצב חברות
+        IF member_rec.expirationdate > CURRENT_DATE THEN
+            v_active_members := v_active_members + 1;
+        ELSE
+            v_expired_members := v_expired_members + 1;
+        END IF;
+
+        -- ספירת שיעורים לחבר
+        OPEN classes_cursor(member_rec.id);
+        FETCH classes_cursor INTO class_count_rec;
+        CLOSE classes_cursor;
+
+        v_total_classes := v_total_classes + COALESCE(class_count_rec.class_count, 0);
+
+        -- ניתוח קבוצות גיל
+        IF member_rec.age BETWEEN 18 AND 25 THEN
+            -- לוגיקת עדכון/הוספה לטבלה זמנית
+        -- ... (המשך הקוד)
+    END LOOP;
+
+    RETURN v_result_cursor;
+END;
+$$;
+```
+
+#### הוכחת פעולה
+**(כאן צילום של הרצת הפונקציה עם תוצאות הסטטיסטיקות)**
+
+---
+
+### 📅 פונקציה 2: get_trainer_schedule - לוח זמנים של מאמן
+
+#### תיאור התוכנית
+פונקציה המחזירה לוח זמנים מפורט של מאמן ספציפי, כולל פרטי השיעורים, זמנים, חדרים ומספר נרשמים. הפונקציה בודקת את קיום המאמן ומחזירה REF CURSOR עם הנתונים מסודרים לפי ימים ושעות.
+
+#### אלמנטי תכנות בשימוש
+- **REF CURSOR**: החזרת תוצאות מובנות
+- **Records**: אחסון פרטי מאמן
+- **Exception Handling**: טיפול בשגיאות מותאמות
+- **Conditionals**: בדיקת קיום מאמן
+- **Complex Queries**: שאילתות מורכבות עם JOINs
+
+#### הקוד
+```sql
+CREATE OR REPLACE FUNCTION get_trainer_schedule(trainer_id_param INTEGER)
+RETURNS REFCURSOR
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    schedule_cursor REFCURSOR := 'trainer_schedule_cursor';
+    trainer_record RECORD;
+    class_count INTEGER := 0;
+BEGIN
+    -- בדיקת קיום המאמן
+    SELECT p.person_name, t.experiencelevel 
+    INTO trainer_record
+    FROM person p 
+    JOIN trainer t ON p.person_id = t.person_id 
+    WHERE p.person_id = trainer_id_param;
+    
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Trainer with ID % not found', trainer_id_param;
+    END IF;
+    
+    -- פתיחת cursor עם פרטי השיעורים
+    OPEN schedule_cursor FOR
+        SELECT 
+            co.course_name,
+            ts.day,
+            ts.start_time,
+            ts.end_time,
+            r.room_name,
+            c.registrants,
+            CASE 
+                WHEN c.registrants > 0 THEN 'Active'
+                ELSE 'No Registrants'
+            END as status
+        FROM class c
+        JOIN course co ON c.course_id = co.course_id
+        JOIN timeslot ts ON c.timeslot_id = ts.timeslot_id
+        JOIN room r ON c.room_id = r.room_id
+        WHERE c.id = trainer_id_param
+        ORDER BY 
+            CASE ts.day
+                WHEN 'Sunday' THEN 1
+                WHEN 'Monday' THEN 2
+                -- ... המשך סדר הימים
+            END,
+            ts.start_time;
+    
+    RETURN schedule_cursor;
+END;
+$$;
+```
+
+#### הוכחת פעולה
+**(כאן צילום של הרצת הפונקציה עם לוח זמנים של מאמן)**
+
+---
+
+### 👥 פרוצדורה 1: register_member_to_class - רישום חבר לשיעור
+
+#### תיאור התוכנית
+פרוצדורה מורכבת הרושמת חבר לשיעור תוך בדיקת מגבלות גיל, קיבולת חדר, חברות בתוקף ומניעת רישום כפול. הפרוצדורה מחפשת שיעור מתאים ומבצעת את הרישום במקרה של הצלחה.
+
+#### אלמנטי תכנות בשימוש
+- **Loops**: לולאת FOR למעבר על שיעורים זמינים
+- **Records**: אחסון פרטי שיעורים
+- **Conditionals**: בדיקות מורכבות של תנאים
+- **DML Operations**: INSERT ו-UPDATE
+- **Exception Handling**: טיפול בשגיאות מותאמות
+- **Boolean Variables**: משתנה לעקיב הצלחת הרישום
+
+#### הקוד
+```sql
+CREATE OR REPLACE PROCEDURE register_member_to_class(
+    p_course_id INTEGER,
+    p_member_id INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    class_rec RECORD;
+    v_member_age INTEGER;
+    v_registration_success BOOLEAN := FALSE;
+BEGIN
+    -- בדיקת קיום הקורס
+    IF NOT EXISTS (SELECT 1 FROM Course WHERE course_id = p_course_id) THEN
+        RAISE EXCEPTION 'Course ID % does not exist', p_course_id;
+    END IF;
+
+    -- בדיקת קיום חבר וחברות בתוקף
+    SELECT EXTRACT(YEAR FROM AGE(p.birth_date)) INTO v_member_age
+    FROM Person p
+    JOIN Member m ON p.person_id = m.id
+    WHERE m.id = p_member_id
+    AND m.expirationdate > CURRENT_DATE;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Member % not found or membership expired', p_member_id;
+    END IF;
+
+    -- חיפוש שיעור מתאים
+    FOR class_rec IN
+        SELECT c.timeslot_id, c.idr as room_id, c.id as trainer_id, c.registrants,
+               r.capacity as room_capacity, co.course_name, co.min_age,
+               t.day, t.start_time
+        FROM Class c
+        JOIN Course co ON c.course_id = co.course_id
+        JOIN TimeSlot t ON c.timeslot_id = t.timeslot_id
+        JOIN Room r ON c.idr = r.room_id
+        WHERE c.course_id = p_course_id
+    LOOP
+        -- בדיקות תנאים מרובות
+        IF v_member_age < class_rec.min_age OR
+           COALESCE(class_rec.registrants, 0) >= class_rec.room_capacity OR
+           EXISTS (SELECT 1 FROM registers_for WHERE person_id = p_member_id 
+                  AND timeslot_id = class_rec.timeslot_id AND room_id = class_rec.room_id)
+        THEN
+            CONTINUE;
+        END IF;
+
+        -- ביצוע הרישום
+        INSERT INTO registers_for (person_id, timeslot_id, room_id)
+        VALUES (p_member_id, class_rec.timeslot_id, class_rec.room_id);
+
+        UPDATE Class
+        SET registrants = COALESCE(registrants, 0) + 1
+        WHERE timeslot_id = class_rec.timeslot_id AND idr = class_rec.room_id;
+
+        v_registration_success := TRUE;
+        EXIT;
+    END LOOP;
+
+    IF NOT v_registration_success THEN
+        RAISE EXCEPTION 'No suitable class found for registration';
+    END IF;
+END;
+$$;
+```
+
+#### הוכחת פעולה
+**(כאן צילום של הרצת הפרוצדורה עם הודעת הצלחה וכן בדיקת העדכון בטבלת registers_for)**
+
+---
+
+### 🔧 פרוצדורה 2: fix_broken_equipment - תיקון ציוד תקול
+
+#### תיאור התוכנית
+פרוצדורה פשוטה ויעילה הסורקת את כל הציוד התקול במכון ומתקנת אותו. הפרוצדורה משתמשת ב-Cursor למעבר על הציוד התקול ומעדכנת את מצבו לתקין.
+
+#### אלמנטי תכנות בשימוש
+- **Explicit Cursor**: למעבר על ציוד תקול
+- **Records**: אחסון פרטי ציוד
+- **Loops**: לולאת FOR
+- **DML Operations**: UPDATE
+- **Counters**: ספירת פריטים שתוקנו
+- **Exception Handling**: טיפול בשגיאות
+
+#### הקוד
+```sql
+CREATE OR REPLACE PROCEDURE fix_broken_equipment()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    eq_cursor CURSOR FOR
+        SELECT eq_id, eq_name, condition, age_restriction
+        FROM equipment
+        WHERE condition = 'F';
+
+    eq_rec RECORD;
+    fixed_count INTEGER := 0;
+BEGIN
+    RAISE NOTICE 'Starting broken equipment repair...';
+
+    FOR eq_rec IN eq_cursor LOOP
+        UPDATE equipment
+        SET condition = 'T'
+        WHERE eq_id = eq_rec.eq_id;
+
+        fixed_count := fixed_count + 1;
+        RAISE NOTICE 'Fixed equipment: % (ID: %)', eq_rec.eq_name, eq_rec.eq_id;
+    END LOOP;
+
+    IF fixed_count = 0 THEN
+        RAISE NOTICE 'No broken equipment found.';
+    ELSE
+        RAISE NOTICE 'Total fixed equipment: %', fixed_count;
+    END IF;
+END;
+$$;
+```
+
+#### הוכחת פעולה
+**(כאן צילום של הרצת הפרוצדורה עם הודעות התקנה של ציוד)**
+
+---
+
+### ⚡ טריגר 1: check_membership_expiration - התראה על פקיעת חברות
+
+#### תיאור התוכנית
+טריגר מתקדם הפועל בעת הוספה או עדכון של חברות. הטריגר בודק את מצב החברות, שולח התראות על פקיעה מתקרבת ומבטל הרשמות אוטומטית במקרה של חברות פגה.
+
+#### אלמנטי תכנות בשימוש
+- **Trigger Function**: פונקציית טריגר
+- **NEW/OLD Records**: גישה לנתונים חדשים וישנים
+- **Conditionals**: הסתעפויות מורכבות
+- **DML Operations**: DELETE אוטומטי
+- **Date Calculations**: חישובי תאריכים
+- **Exception Handling**: טיפול בשגיאות
+
+#### הקוד
+```sql
+CREATE OR REPLACE FUNCTION check_membership_expiration()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    person_name_var VARCHAR(30);
+    days_until_expiry INTEGER;
+    registrations_count INTEGER;
+BEGIN
+    -- קבלת שם החבר
+    SELECT person_name INTO person_name_var
+    FROM person
+    WHERE person_id = NEW.person_id;
+    
+    -- חישוב ימים עד פקיעה
+    days_until_expiry := NEW.expirationdate - CURRENT_DATE;
+    
+    -- ספירת הרשמות פעילות
+    SELECT COUNT(*) INTO registrations_count
+    FROM registers_for
+    WHERE person_id = NEW.person_id;
+    
+    -- הסתעפות לפי מצב החברות
+    IF NEW.expirationdate < CURRENT_DATE THEN
+        -- חברות פגה - ביטול כל ההרשמות
+        DELETE FROM registers_for WHERE person_id = NEW.person_id;
+        RAISE WARNING 'EXPIRED MEMBERSHIP: Member % (ID: %) membership has expired. All registrations cancelled.', 
+                     person_name_var, NEW.person_id;
+    ELSIF days_until_expiry <= 7 AND days_until_expiry > 0 THEN
+        -- התראה על פקיעה מתקרבת
+        RAISE NOTICE 'EXPIRATION WARNING: Member % (ID: %) membership expires in % days.', 
+                     person_name_var, NEW.person_id, days_until_expiry;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE TRIGGER trigger_membership_expiration
+    AFTER INSERT OR UPDATE OF expirationdate
+    ON member
+    FOR EACH ROW
+    EXECUTE FUNCTION check_membership_expiration();
+```
+
+#### הוכחת פעולה
+** צילום של עדכון חברות עם הודעות התראה מהטריגר**
+![צילום מסך 2025-06-23 004637](https://github.com/user-attachments/assets/b84c3411-57de-4b78-9bfc-96486a717158)
+
+
+
+---
+
+### 📊 טריגר 2: validate_class_capacity - בקרת קיבולת שיעורים
+
+#### תיאור התוכנית
+טריגר מורכב הפועל על טבלת registers_for ובודק קיבולת שיעורים. הטריגר מונע הרשמות חורגות, מעדכן אוטומטית את מספר הנרשמים ושולח התראות כאשר השיעור מתקרב לקיבולת מלאה.
+
+#### אלמנטי תכנות בשימוש
+- **Multi-Event Trigger**: טריגר הפועל על INSERT/UPDATE/DELETE
+- **TG_OP Variable**: זיהוי סוג הפעולה
+- **Complex Conditionals**: בדיקות מורכבות
+- **DML Operations**: UPDATE אוטומטי
+- **Calculations**: חישוב אחוזי קיבולת
+- **Exception Handling**: זריקת חריגות מותאמות
+
+#### הקוד
+```sql
+CREATE OR REPLACE FUNCTION validate_class_capacity()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    room_capacity_var INTEGER;
+    current_registrants_var INTEGER;
+    course_name_var VARCHAR(50);
+    room_name_var VARCHAR(15);
+BEGIN
+    -- קבלת פרטי החדר
+    SELECT capacity, room_name INTO room_capacity_var, room_name_var
+    FROM room
+    WHERE room_id = COALESCE(NEW.room_id, OLD.room_id);
+    
+    IF TG_OP = 'INSERT' THEN
+        -- בדיקה בהכנסת הרשמה חדשה
+        SELECT COUNT(*) INTO current_registrants_var
+        FROM registers_for
+        WHERE timeslot_id = NEW.timeslot_id AND room_id = NEW.room_id;
+        
+        -- בדיקת חריגה מקיבולת
+        IF current_registrants_var > room_capacity_var THEN
+            RAISE EXCEPTION 'Cannot register: Room % capacity exceeded. Capacity: %, Attempting: %', 
+                           room_name_var, room_capacity_var, current_registrants_var;
+        END IF;
+        
+        -- עדכון מספר הרשומים
+        UPDATE class 
+        SET registrants = current_registrants_var
+        WHERE timeslot_id = NEW.timeslot_id AND idr = NEW.room_id;
+        
+        -- התראה אם מתקרבים לקיבולת מלאה
+        IF current_registrants_var >= (room_capacity_var * 0.9) THEN
+            RAISE NOTICE 'CAPACITY WARNING: Class in room % is nearly full (%/% capacity)', 
+                         room_name_var, current_registrants_var, room_capacity_var;
+        END IF;
+        
+        RETURN NEW;
+    -- ... (טיפול ב-DELETE ו-UPDATE)
+    END IF;
+END;
+$$;
+```
+
+#### הוכחת פעולה
+**צילום של הרשמה לשיעור עם הודעת אזהרה על קיבולת או חריגה מקיבולת**
+![צילום מסך 2025-06-23 035319](https://github.com/user-attachments/assets/ea9dd711-5444-4e15-aea9-f6752f19e04f)
+
+---
+
+### 🚀 תוכנית ראשית 1: program1 - ניתוח חברים ורישום
+
+#### תיאור התוכנית
+תוכנית מרכזית המבצעת ניתוח מקיף של נתוני חברים ולאחר מכן מנסה לרשם חבר לשיעור. התוכנית מציגה דוגמה לשילוב פונקציה ופרוצדורה בתוך טרנזקציה.
+
+#### רכיבי התוכנית
+- **קריאה לפונקציית ניתוח**: `analyze_member_statistics`
+- **קריאה לפרוצדורת רישום**: `register_member_to_class`
+- **ניהול טרנזקציות**: BEGIN/ROLLBACK
+- **טיפול בחריגות**: Exception handling
+
+#### הקוד
+```sql
+BEGIN;
+
+-- חלק 1: אנליטיקה על חברים
+DO $$
+DECLARE
+    v_cursor REFCURSOR;
+    v_analysis_type TEXT;
+    v_metric_name TEXT;
+    v_metric_value NUMERIC;
+    v_details TEXT;
+BEGIN
+    RAISE NOTICE '--- Starting Member Analytics ---';
+    v_cursor := analyze_member_statistics(18, NULL);
+
+    LOOP
+        FETCH NEXT FROM v_cursor INTO v_analysis_type, v_metric_name, v_metric_value, v_details;
+        EXIT WHEN NOT FOUND;
+        RAISE NOTICE 'Analytics → Type: %, Metric: %, Value: %', 
+            v_analysis_type, v_metric_name, v_metric_value;
+    END LOOP;
+
+    CLOSE v_cursor;
+END $$;
+
+-- חלק 2: רישום חבר לקורס
+DO $$
+BEGIN
+    RAISE NOTICE '--- Attempting Registration ---';
+    CALL register_member_to_class(33, 1010);
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Registration failed: %', SQLERRM;
+END $$;
+
+ROLLBACK;
+```
+
+#### הוכחת פעולה
+**(כאן צילום של הרצת התוכנית הראשית עם תוצאות הניתוח והרישום)**
+
+---
+
+### 🔧 תוכנית ראשית 2: program2 - ניהול ציוד ולוח זמנים
+
+#### תיאור התוכנית
+תוכנית שנייה המשלבת תיקון ציוד תקול עם הצגת לוח זמנים של מאמן. מדגימה שילוב של פרוצדורה ופונקציה בתוך טרנזקציה אחת.
+
+#### רכיבי התוכנית
+- **קריאה לפרוצדורת תיקון ציוד**: `fix_broken_equipment`
+- **קריאה לפונקציית לוח זמנים**: `get_trainer_schedule`
+- **ניהול טרנזקציות**: BEGIN/ROLLBACK
+
+#### הקוד
+```sql
+BEGIN;
+DO $$
+DECLARE
+    v_trainer_id INTEGER := 402;
+    v_cursor REFCURSOR;
+    v_course_name TEXT;
+    v_day TEXT;
+    v_start TEXT;
+    v_end TEXT;
+    v_room TEXT;
+    v_reg NUMERIC;
+    v_status TEXT;
+BEGIN
+    -- חלק א': תיקון ציוד תקול
+    CALL fix_broken_equipment();
+
+    -- חלק ב': הצגת לוח זמנים של מאמן
+    RAISE NOTICE 'Fetching schedule for trainer ID: %', v_trainer_id;
+    v_cursor := get_trainer_schedule(v_trainer_id);
+
+    LOOP
+        FETCH NEXT FROM v_cursor INTO v_course_name, v_day, v_start, v_end, v_room, v_reg, v_status;
+        EXIT WHEN NOT FOUND;
+        RAISE NOTICE 'Class: %, Day: %, Time: %-% | Room: %, Registrants: %', 
+                     v_course_name, v_day, v_start, v_end, v_room, v_reg;
+    END LOOP;
+
+    CLOSE v_cursor;
+END $$;
+ROLLBACK;
+```
+
+#### הוכחת פעולה
+**(כאן צילום של הרצת התוכנית השנייה עם תיקון ציוד ולוח זמנים)**
+
+---
+
+### 📝 שינויים בטבלאות - AlterTable.sql
+
+#### תיאור השינויים
+ביצענו עדכון בטבלת Course להוספת מגבלות גיל רנדומליות לקורסים, במטרה להפוך את בדיקות הגיל בפרוצדורת הרישום למעניינות יותר.
+
+#### הקוד
+```sql
+UPDATE Course
+SET min_age = FLOOR(RANDOM() * 7) + 16;
+```
+
+#### הסבר השינוי
+העדכון מגדיר לכל קורס גיל מינימלי אקראי בין 16 ל-22, מה שמאפשר בדיקה טובה יותר של לוגיקת הגיל בפרוצדורת הרישום.
+
+---
+
+### 📊 סיכום אלמנטי התכנות ששולבו
+
+#### רשימת האלמנטים
+✅ **Explicit Cursors** - בכל הפונקציות והפרוצדורות  
+✅ **REF Cursor** - בשתי הפונקציות  
+✅ **Records** - בכל התוכניות  
+✅ **DML Operations** - INSERT, UPDATE, DELETE במספר מקומות  
+✅ **Loops** - לולאות FOR ו-LOOP  
+✅ **Conditionals** - הסתעפויות מורכבות  
+✅ **Exception Handling** - טיפול בשגיאות בכל התוכניות  
+✅ **Variables** - משתנים מסוגים שונים  
+✅ **Boolean Logic** - משתנים בוליאניים ובדיקות תנאי  
+✅ **Date/Time Operations** - עבודה עם תאריכים  
+✅ **Triggers** - שני טריגרים מתקדמים  
+
+---
+
+
+---
+
+
+
